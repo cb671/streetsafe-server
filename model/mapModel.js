@@ -127,21 +127,23 @@ class Crime {
     const formattedData = await Promise.all(
       rawData.map(async (row) => {
         const locationName = await this.getLocationNameFromH3(row.h3_low_res);
-        return [
-          row.h3_low_res,
-          locationName,
-          parseInt(row.burglary) || 0,
-          parseInt(row.personal_theft) || 0,
-          parseInt(row.weapon_crime) || 0,
-          parseInt(row.bicycle_theft) || 0,
-          parseInt(row.damage) || 0,
-          parseInt(row.robbery) || 0,
-          parseInt(row.shoplifting) || 0,
-          parseInt(row.violent) || 0,
-          parseInt(row.anti_social) || 0,
-          parseInt(row.drugs) || 0,
-          parseInt(row.vehicle_crime) || 0
-        ];
+        return {
+          h3: row.h3_low_res,
+          name: locationName,
+          crimes: [
+            parseInt(row.burglary) || 0,
+            parseInt(row.personal_theft) || 0,
+            parseInt(row.weapon_crime) || 0,
+            parseInt(row.bicycle_theft) || 0,
+            parseInt(row.damage) || 0,
+            parseInt(row.robbery) || 0,
+            parseInt(row.shoplifting) || 0,
+            parseInt(row.violent) || 0,
+            parseInt(row.anti_social) || 0,
+            parseInt(row.drugs) || 0,
+            parseInt(row.vehicle_crime) || 0
+          ]
+        };
       })
     );
     return formattedData;
