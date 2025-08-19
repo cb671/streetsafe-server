@@ -4,7 +4,7 @@ class MapController {
     try {
       const startDate = req.query.startDate || '2025-01-01';
       const rawCrimeData = await Crime.getCrimeDataByH3(startDate);
-      const formattedData = Crime.formatCrimeData(rawCrimeData);
+      const formattedData = Crime.formatCrimeData(rawCrimeData); 
       res.json(formattedData);
     } catch (error) {
       console.error("Error fetching police data:", error);
@@ -36,7 +36,8 @@ class MapController {
         });
       }
 
-      const formattedData = Crime.formatCrimeData([rawCrimeData]);
+      
+      const formattedData = await Crime.formatCrimeDataWithLocation([rawCrimeData]);
       res.json(formattedData[0]);
     } catch (error) {
       console.error("Error fetching specific hexagon data:", error);

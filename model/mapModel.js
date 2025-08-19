@@ -1,4 +1,5 @@
 const db = require("../database/connect");
+
 class Crime {
   static async getCrimeDataByH3(startDate = '2020-01-01') {
     try {
@@ -62,6 +63,49 @@ class Crime {
     }
   }
 
+  static async getLocationNameFromH3(h3Index) {
+    try {
+      const query = `SELECT h3_cell_to_lat_lng($1::h3index) as coords`;
+      const { rows } = await db.query(query, [h3Index]);
+      
+      if (rows.length === 0) return "Unknown Location";
+      
+      const lat = rows[0].coords.y;
+      const lng = rows[0].coords.x;
+      
+      if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
+        console.error('Invalid coordinates:', { lat, lng });
+        return "Unknown Location";
+      }
+      
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`,
+        {
+          headers: {
+            'User-Agent': 'StreetSafe-App/1.0'
+          }
+        }
+      );
+      
+      if (!response.ok) return "Unknown Location";
+      
+      const data = await response.json();
+      const address = data.address || {};
+      
+      const locationParts = [
+        address.neighbourhood || address.suburb,
+        address.city || address.town || address.village,
+        address.county
+      ].filter(Boolean);
+      
+      return locationParts.length > 0 ? locationParts.join(', ') : "Unknown Location";
+      
+    } catch (error) {
+      console.error('Error getting location name:', error);
+      return "Unknown Location";
+    }
+  }
+
   static formatCrimeData(rawData) {
     return rawData.map(row => [
       row.h3_low_res,
@@ -78,7 +122,32 @@ class Crime {
       parseInt(row.vehicle_crime) || 0
     ]);
   }
+
+  static async formatCrimeDataWithLocation(rawData) {
+    const formattedData = await Promise.all(
+      rawData.map(async (row) => {
+        const locationName = await this.getLocationNameFromH3(row.h3_low_res);
+        return [
+          row.h3_low_res,
+          locationName,
+          parseInt(row.burglary) || 0,
+          parseInt(row.personal_theft) || 0,
+          parseInt(row.weapon_crime) || 0,
+          parseInt(row.bicycle_theft) || 0,
+          parseInt(row.damage) || 0,
+          parseInt(row.robbery) || 0,
+          parseInt(row.shoplifting) || 0,
+          parseInt(row.violent) || 0,
+          parseInt(row.anti_social) || 0,
+          parseInt(row.drugs) || 0,
+          parseInt(row.vehicle_crime) || 0
+        ];
+      })
+    );
+    return formattedData;
+  }
 }
+
 module.exports = Crime;
 
 
