@@ -1,9 +1,9 @@
 const {Router} = require("express");
-const map = require("./mapRoutes");
+const map = require("./map");
 const router = Router();
 
 
-router.use("/mapRoutes", map);
+router.use("/map", map);
 
 
 module.exports = router;

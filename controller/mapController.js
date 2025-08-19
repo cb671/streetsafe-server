@@ -1,4 +1,4 @@
-const Crime = require("../model/crimeModel");
+const Crime = require("../model/mapModel");
 class MapController {
   static async getMapFeatures(req, res) {
     try {
