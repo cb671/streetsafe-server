@@ -30,23 +30,22 @@ class Crime {
       throw new Error(`Database error: ${error.message}`);
     }
   }
+
   static formatCrimeData(rawData) {
-    return rawData.map(row => ({
-      h3: row.h3_low_res,
-      crime: [
-        parseInt(row.burglary) || 0,
-        parseInt(row.personal_theft) || 0,
-        parseInt(row.weapon_crime) || 0,
-        parseInt(row.bicycle_theft) || 0,
-        parseInt(row.damage) || 0,
-        parseInt(row.robbery) || 0,
-        parseInt(row.shoplifting) || 0,
-        parseInt(row.violent) || 0,
-        parseInt(row.anti_social) || 0,
-        parseInt(row.drugs) || 0,
-        parseInt(row.vehicle_crime) || 0
-      ]
-    }));
+    return rawData.map(row => [
+      row.h3_low_res,
+      parseInt(row.burglary) || 0,
+      parseInt(row.personal_theft) || 0,
+      parseInt(row.weapon_crime) || 0,
+      parseInt(row.bicycle_theft) || 0,
+      parseInt(row.damage) || 0,
+      parseInt(row.robbery) || 0,
+      parseInt(row.shoplifting) || 0,
+      parseInt(row.violent) || 0,
+      parseInt(row.anti_social) || 0,
+      parseInt(row.drugs) || 0,
+      parseInt(row.vehicle_crime) || 0
+    ]);
   }
 }
 module.exports = Crime;
