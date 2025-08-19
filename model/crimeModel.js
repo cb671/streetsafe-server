@@ -31,6 +31,37 @@ class Crime {
     }
   }
 
+  static async getCrimeDataBySpecificH3(h3Index, startDate = '2020-01-01') {
+    try {
+      const query = `
+        SELECT
+          h3_low_res,
+          SUM(burglary) AS burglary,
+          SUM(personal_theft) AS personal_theft,
+          SUM(weapon_crime) AS weapon_crime,
+          SUM(bicycle_theft) AS bicycle_theft,
+          SUM(damage) AS damage,
+          SUM(robbery) AS robbery,
+          SUM(shoplifting) AS shoplifting,
+          SUM(violent) AS violent,
+          SUM(anti_social) AS anti_social,
+          SUM(drugs) AS drugs,
+          SUM(vehicle_crime) AS vehicle_crime
+        FROM (
+          SELECT *, h3_cell_to_parent(h3::h3index, 9) AS h3_low_res
+          FROM crime_areas
+        ) sub
+        WHERE h3_low_res = $1 AND date >= $2
+        GROUP BY h3_low_res;
+      `;
+      const values = [h3Index, startDate];
+      const { rows } = await db.query(query, values);
+      return rows[0] || null;
+    } catch (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+  }
+
   static formatCrimeData(rawData) {
     return rawData.map(row => [
       row.h3_low_res,
