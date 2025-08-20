@@ -1,10 +1,8 @@
 const db = require("../database/connect");
 
 class Crime {
-  static async getCrimeDataByH3(startDate = '2025-01-01', endDate = null) {
+  static async getCrimeDataByH3(startDate, endDate = null) {
     try {
-      const endDateValue = endDate || new Date().toISOString().split('T')[0];
-      
       const query = `
         SELECT
           h3_low_res,
@@ -26,7 +24,7 @@ class Crime {
         WHERE date >= $1 AND date <= $2
         GROUP BY h3_low_res;
       `;
-      const values = [startDate, endDateValue];
+      const values = [startDate.toUTCString(), endDate.toUTCString()];
       const { rows } = await db.query(query, values);
       return rows;
     } catch (error) {
@@ -34,10 +32,10 @@ class Crime {
     }
   }
 
-  static async getCrimeDataBySpecificH3(h3Index, startDate = '2020-01-01', endDate = null) {
+  static async getCrimeDataBySpecificH3(h3Index, startDate, endDate) {
     try {
-      const endDateValue = endDate || new Date().toISOString().split('T')[0];
-      
+      const endDateValue = endDate || new Date();
+
       const query = `
         SELECT
           h3_low_res,
@@ -59,7 +57,7 @@ class Crime {
         WHERE h3_low_res = $1 AND date >= $2 AND date <= $3
         GROUP BY h3_low_res;
       `;
-      const values = [h3Index, startDate, endDateValue];
+      const values = [h3Index, startDate.toUTCString(), endDate.toUTCString()];
       const { rows } = await db.query(query, values);
       return rows[0] || null;
     } catch (error) {
@@ -71,17 +69,17 @@ class Crime {
     try {
       const query = `SELECT h3_cell_to_lat_lng($1::h3index) as coords`;
       const { rows } = await db.query(query, [h3Index]);
-      
+
       if (rows.length === 0) return "Unknown Location";
-      
+
       const lat = rows[0].coords.y;
       const lng = rows[0].coords.x;
-      
+
       if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
         console.error('Invalid coordinates:', { lat, lng });
         return "Unknown Location";
       }
-      
+
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`,
         {
@@ -90,20 +88,20 @@ class Crime {
           }
         }
       );
-      
+
       if (!response.ok) return "Unknown Location";
-      
+
       const data = await response.json();
       const address = data.address || {};
-      
+
       const locationParts = [
         address.neighbourhood || address.suburb,
         address.city || address.town || address.village,
         address.county
       ].filter(Boolean);
-      
+
       return locationParts.length > 0 ? locationParts.join(', ') : "Unknown Location";
-      
+
     } catch (error) {
       console.error('Error getting location name:', error);
       return "Unknown Location";
