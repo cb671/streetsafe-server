@@ -1,7 +1,9 @@
 DROP TABLE IF EXISTS educational_sources;
 DROP TABLE IF EXISTS emergency_services;
-DROP TABLE IF EXISTS crime_areas;
 
+-- Try with CASCADE to auto-install dependencies
+CREATE EXTENSION IF NOT EXISTS h3 CASCADE;
+CREATE EXTENSION IF NOT EXISTS h3_postgis CASCADE;
 
 CREATE TABLE emergency_services (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
