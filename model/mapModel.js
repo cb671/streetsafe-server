@@ -1,8 +1,10 @@
 const db = require("../database/connect");
 
 class Crime {
-  static async getCrimeDataByH3(startDate = '2020-01-01') {
+  static async getCrimeDataByH3(startDate = '2020-01-01', endDate = null) {
     try {
+      const endDateValue = endDate || new Date().toISOString().split('T')[0];
+      
       const query = `
         SELECT
           h3_low_res,
@@ -21,10 +23,10 @@ class Crime {
           SELECT *, h3_cell_to_parent(h3::h3index, 9) AS h3_low_res
           FROM crime_areas
         ) sub
-        WHERE date >= $1
+        WHERE date >= $1 AND date <= $2
         GROUP BY h3_low_res;
       `;
-      const values = [startDate];
+      const values = [startDate, endDateValue];
       const { rows } = await db.query(query, values);
       return rows;
     } catch (error) {
@@ -32,8 +34,10 @@ class Crime {
     }
   }
 
-  static async getCrimeDataBySpecificH3(h3Index, startDate = '2020-01-01') {
+  static async getCrimeDataBySpecificH3(h3Index, startDate = '2020-01-01', endDate = null) {
     try {
+      const endDateValue = endDate || new Date().toISOString().split('T')[0];
+      
       const query = `
         SELECT
           h3_low_res,
@@ -52,10 +56,10 @@ class Crime {
           SELECT *, h3_cell_to_parent(h3::h3index, 9) AS h3_low_res
           FROM crime_areas
         ) sub
-        WHERE h3_low_res = $1 AND date >= $2
+        WHERE h3_low_res = $1 AND date >= $2 AND date <= $3
         GROUP BY h3_low_res;
       `;
-      const values = [h3Index, startDate];
+      const values = [h3Index, startDate, endDateValue];
       const { rows } = await db.query(query, values);
       return rows[0] || null;
     } catch (error) {

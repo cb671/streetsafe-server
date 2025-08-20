@@ -2,8 +2,9 @@ const Crime = require("../model/mapModel");
 class MapController {
   static async getMapFeatures(req, res) {
     try {
-      const startDate = req.query.startDate || '2025-01-01';
-      const rawCrimeData = await Crime.getCrimeDataByH3(startDate);
+      const startDate = req.query.startDate || '2020-01-01';
+      const endDate = req.query.endDate;
+      const rawCrimeData = await Crime.getCrimeDataByH3(startDate, endDate);
       const formattedData = Crime.formatCrimeData(rawCrimeData); 
       res.json(formattedData);
     } catch (error) {
@@ -19,6 +20,7 @@ class MapController {
     try {
       const { h3Index } = req.params;
       const startDate = req.query.startDate || '2025-01-01';
+      const endDate = req.query.endDate;
       
       if (!h3Index) {
         return res.status(400).json({
@@ -27,7 +29,7 @@ class MapController {
         });
       }
 
-      const rawCrimeData = await Crime.getCrimeDataBySpecificH3(h3Index, startDate);
+      const rawCrimeData = await Crime.getCrimeDataBySpecificH3(h3Index, startDate, endDate);
       
       if (!rawCrimeData) {
         return res.status(404).json({
