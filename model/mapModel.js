@@ -1,7 +1,7 @@
 const db = require("../database/connect");
 
 class Crime {
-  static async getCrimeDataByH3(startDate = '2020-01-01', endDate = null) {
+  static async getCrimeDataByH3(startDate = '2025-01-01', endDate = null) {
     try {
       const endDateValue = endDate || new Date().toISOString().split('T')[0];
       

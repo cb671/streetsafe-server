@@ -2,7 +2,7 @@ const Crime = require("../model/mapModel");
 class MapController {
   static async getMapFeatures(req, res) {
     try {
-      const startDate = req.query.startDate || '2020-01-01';
+      const startDate = req.query.startDate || '2025-01-01';
       const endDate = req.query.endDate;
       const rawCrimeData = await Crime.getCrimeDataByH3(startDate, endDate);
       const formattedData = Crime.formatCrimeData(rawCrimeData); 
