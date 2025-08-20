@@ -1,10 +1,10 @@
 const {Router} = require("express");
 const map = require("./map");
-const trends = require("./trends");
+const graphs = require("./graphs");
 const router = Router();
 
 
 router.use("/map", map);
-router.use("/trends", trends);
+router.use("/graphs", graphs);
 
 module.exports = router;
