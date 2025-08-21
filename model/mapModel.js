@@ -34,41 +34,93 @@ class Crime {
 
   static async getCrimeDataBySpecificH3(h3Index, startDate, endDate) {
     try {
+      console.log('getCrimeDataBySpecificH3 called with:', { h3Index, startDate, endDate }); 
+      
       const endDateValue = endDate || new Date();
 
-      const query = `
-        SELECT
-          h3_low_res,
-          SUM(burglary) AS burglary,
-          SUM(personal_theft) AS personal_theft,
-          SUM(weapon_crime) AS weapon_crime,
-          SUM(bicycle_theft) AS bicycle_theft,
-          SUM(damage) AS damage,
-          SUM(robbery) AS robbery,
-          SUM(shoplifting) AS shoplifting,
-          SUM(violent) AS violent,
-          SUM(anti_social) AS anti_social,
-          SUM(drugs) AS drugs,
-          SUM(vehicle_crime) AS vehicle_crime
-        FROM (
-          SELECT *, h3_cell_to_parent(h3::h3index, 9) AS h3_low_res
-          FROM crime_areas
-        ) sub
-        WHERE h3_low_res = $1 AND date >= $2 AND date <= $3
-        GROUP BY h3_low_res;
-      `;
-      const values = [h3Index, startDate.toUTCString(), endDate.toUTCString()];
+      //check if h3Index is a hex string  or a BIGINT
+      const isHexString = /[a-fA-F]/.test(h3Index.toString());
+      let query;
+      
+      if (isHexString) {
+        query = `
+          SELECT
+            h3_low_res,
+            SUM(burglary) AS burglary,
+            SUM(personal_theft) AS personal_theft,
+            SUM(weapon_crime) AS weapon_crime,
+            SUM(bicycle_theft) AS bicycle_theft,
+            SUM(damage) AS damage,
+            SUM(robbery) AS robbery,
+            SUM(shoplifting) AS shoplifting,
+            SUM(violent) AS violent,
+            SUM(anti_social) AS anti_social,
+            SUM(drugs) AS drugs,
+            SUM(vehicle_crime) AS vehicle_crime
+          FROM (
+            SELECT *, h3_cell_to_parent(h3::h3index, 9) AS h3_low_res
+            FROM crime_areas
+          ) sub
+          WHERE h3_low_res = $1::h3index AND date >= $2 AND date <= $3
+          GROUP BY h3_low_res;
+        `;
+      } else {
+        //BIGINT format 
+        query = `
+          SELECT
+            h3_low_res,
+            SUM(burglary) AS burglary,
+            SUM(personal_theft) AS personal_theft,
+            SUM(weapon_crime) AS weapon_crime,
+            SUM(bicycle_theft) AS bicycle_theft,
+            SUM(damage) AS damage,
+            SUM(robbery) AS robbery,
+            SUM(shoplifting) AS shoplifting,
+            SUM(violent) AS violent,
+            SUM(anti_social) AS anti_social,
+            SUM(drugs) AS drugs,
+            SUM(vehicle_crime) AS vehicle_crime
+          FROM (
+            SELECT *, h3_cell_to_parent(h3::h3index, 9) AS h3_low_res
+            FROM crime_areas
+          ) sub
+          WHERE h3_low_res = $1::bigint::h3index AND date >= $2 AND date <= $3
+          GROUP BY h3_low_res;
+        `;
+      }
+      
+      console.log('Query:', query);
+      console.log('Values:', [h3Index, startDate.toUTCString(), endDateValue.toUTCString()]);
+      
+      const values = [h3Index, startDate.toUTCString(), endDateValue.toUTCString()];
       const { rows } = await db.query(query, values);
+      
+      console.log('Query result rows:', rows); 
+      console.log('Returning:', rows[0] || null); 
+      
       return rows[0] || null;
     } catch (error) {
+      console.error('getCrimeDataBySpecificH3 error:', error); 
       throw new Error(`Database error: ${error.message}`);
     }
   }
 
   static async getLocationNameFromH3(h3Index) {
     try {
-      const query = `SELECT h3_cell_to_lat_lng($1::h3index) as coords`;
-      const { rows } = await db.query(query, [h3Index]);
+      let query;
+      let queryParams;
+      
+      const isHexString = /[a-fA-F]/.test(h3Index.toString());
+      
+      if (isHexString) {
+        query = `SELECT h3_cell_to_lat_lng($1::h3index) as coords`;
+        queryParams = [h3Index];
+      } else {
+        query = `SELECT h3_cell_to_lat_lng($1::bigint::h3index) as coords`;
+        queryParams = [h3Index];
+      }
+      
+      const { rows } = await db.query(query, queryParams);
 
       if (rows.length === 0) return "Unknown Location";
 
@@ -100,7 +152,6 @@ class Crime {
         address.county
       ].filter(Boolean);
 
-      // remove duplicates while preserving order
       const uniqueLocationParts = locationParts.filter((part, index, array) => 
         array.indexOf(part) === index
       );
