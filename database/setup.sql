@@ -5,11 +5,9 @@ DROP TABLE IF EXISTS crime_areas;
 
 CREATE TABLE emergency_services (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    h3 BIGINT NOT NULL,
     type VARCHAR(50) NOT NULL,
-    phone_number VARCHAR(20) NOT NULL,
-    url VARCHAR(255),
-    h3 BIGINT NOT NULL
+    name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE educational_sources (
