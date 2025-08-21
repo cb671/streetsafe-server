@@ -100,7 +100,12 @@ class Crime {
         address.county
       ].filter(Boolean);
 
-      return locationParts.length > 0 ? locationParts.join(', ') : "Unknown Location";
+      // remove duplicates while preserving order
+      const uniqueLocationParts = locationParts.filter((part, index, array) => 
+        array.indexOf(part) === index
+      );
+
+      return uniqueLocationParts.length > 0 ? uniqueLocationParts.join(', ') : "Unknown Location";
 
     } catch (error) {
       console.error('Error getting location name:', error);
