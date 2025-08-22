@@ -84,7 +84,7 @@ class Crime {
             SELECT *, h3_cell_to_parent(h3::h3index, 9) AS h3_low_res
             FROM crime_areas
           ) sub
-          WHERE h3_low_res = $1::bigint::h3index AND date >= $2 AND date <= $3
+          WHERE h3_low_res = $1::h3index AND date >= $2 AND date <= $3
           GROUP BY h3_low_res;
         `;
       }

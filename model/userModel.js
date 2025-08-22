@@ -7,7 +7,7 @@ class User {
       const hashedPassword = await bcrypt.hash(password, 12);
       const query = `
         INSERT INTO users (name, email, password, h3)
-        VALUES ($1, $2, $3, $4)
+        VALUES ($1, $2, $3, $4::h3index::bigint)
         RETURNING id, name, email, h3, created_at
       `;
       const values = [name, email, hashedPassword, h3];
@@ -74,7 +74,7 @@ class User {
       console.log(`Coordinates: lat=${latitude}, lng=${longitude}`);
       
       
-      const query = `SELECT h3_lat_lng_to_cell(POINT($1, $2), 9)::BIGINT as h3_index`;
+      const query = `SELECT h3_lat_lng_to_cell(POINT($1, $2), 9)::h3index as h3_index`;
       const { rows } = await db.query(query, [longitude, latitude]);
       
       console.log(`H3 index: ${rows[0].h3_index}`);
