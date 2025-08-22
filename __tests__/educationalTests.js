@@ -20,6 +20,16 @@ const User = require('../model/userModel');
 describe('Educational Model and Controller', () => {
   let req, res;
 
+  beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    console.log.mockRestore();
+    console.error.mockRestore();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     req = { userId: null, body: {}, params: {} };
