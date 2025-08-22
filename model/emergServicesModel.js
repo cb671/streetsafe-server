@@ -6,9 +6,9 @@ class EmergencyServices {
     const resolution = 9; // normalize everything
     const inputNorm = h3.h3ToParent(h3Index, resolution);
 
-    // pull all police + hospitals
+    // pull all police + hospitals, already as H3 index strings
     const { rows } = await db.query(`
-      SELECT name, type, h3
+      SELECT name, type, h3::h3index AS h3
       FROM emergency_services
       WHERE type IN ('police', 'NHS Hospital')
     `);
@@ -20,26 +20,18 @@ class EmergencyServices {
 
     for (const row of rows) {
       try {
-        // Convert bigint → hex → h3 index string
-        const dbH3Str = BigInt(row.h3).toString(16);
-
         // normalize resolution
-        const dbNorm = h3.h3ToParent(dbH3Str, resolution);
-
-        //çconsole.log(h3.h3GetResolution(dbNorm));
-
+        const dbNorm = h3.h3ToParent(row.h3, resolution);
 
         // compute grid distance
         const distance = h3.h3Distance(inputNorm, dbNorm);
-
-
 
         if (row.type === "police") {
           if (!closest.police || distance < closest.police.distance) {
             closest.police = {
               name: row.name,
               type: row.type,
-              h3: row.h3.toString(),
+              h3: row.h3, // already H3 index string
               distance,
             };
           }
@@ -48,7 +40,7 @@ class EmergencyServices {
             closest.hospital = {
               name: row.name,
               type: row.type,
-              h3: row.h3.toString(),
+              h3: row.h3, // already H3 index string
               distance,
             };
           }
@@ -58,9 +50,19 @@ class EmergencyServices {
       }
     }
 
+    //return closest;
+    // Before returning
+    const result = {
+        police: closest.police
+            ? { name: closest.police.name, type: closest.police.type, h3: closest.police.h3 }
+            : null,
+        hospital: closest.hospital
+            ? { name: closest.hospital.name, type: closest.hospital.type, h3: closest.hospital.h3 }
+            : null
+        };
+    return result;
+  
 
-
-    return closest;
   }
 }
 
