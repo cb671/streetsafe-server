@@ -24,6 +24,16 @@ const jwt = require('jsonwebtoken');
 describe('User Model and Auth Controller', () => {
   let req, res;
 
+  beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    console.log.mockRestore();
+    console.error.mockRestore();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     
