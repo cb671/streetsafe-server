@@ -19,17 +19,21 @@
     "test:watch": "jest --watch",
     "coverage": "jest --coverage",
     "dev": "nodemon -L index.js",
-    "setup-db": "node ./database/setup.js"
+    "setup-db": "node ./database/setup.js",
+    "import": "node database/import_emergserv_data.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "node-fetch": "^3.3.2",
-    "pg": "^8.16.3"
+    "h3-js": "^3.7.2",
+    "pg": "^8.16.3",
+    "proj4": "^2.19.10"
   },
   "devDependencies": {
     "@jest/globals": "^30.0.5",

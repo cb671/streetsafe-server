@@ -16,9 +16,9 @@ CREATE TABLE users (
 
 CREATE TABLE emergency_services (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    h3 BIGINT NOT NULL,
     type VARCHAR(50) NOT NULL,
-    h3 BIGINT NOT NULL
+    name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE educational_sources (
