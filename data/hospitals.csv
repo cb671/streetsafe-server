@@ -1,0 +1,744 @@
+type,name,latitude,longitude
+NHS Hospital,North Somerset Community Hospital,51.43719482,-2.847192764
+NHS Hospital,Evesham Community Hospital,52.08626175,-1.948670626
+NHS Hospital,Malvern Community Hospital,52.12385178,-2.322845221
+NHS Hospital,Princess of Wales Community Hospital - Worcestershire Health and Care NHS Trust,52.3441391,-2.055647612
+NHS Hospital,Ludlow Community Hospital,52.37365723,-2.714434147
+NHS Hospital,Bridgnorth Community Hospital,52.53790283,-2.421488047
+NHS Hospital,Bishop's Castle Community Hospital,52.4930954,-2.999591112
+NHS Hospital,Whitchurch Community Hospital,52.97274017,-2.679201841
+NHS Hospital,Gateway Surgical Centre,51.52277756,0.034731604
+NHS Hospital,The Royal London Hospital,51.51869965,-0.060150061
+NHS Hospital,Mile End Hospital,51.5250473,-0.04219196
+NHS Hospital,Whipps Cross Hospital,51.57883072,0.002652787
+NHS Hospital,St Bartholomew's Hospital,51.51774979,-0.10038992
+NHS Hospital,Newham Hospital,51.52277756,0.034731604
+NHS Hospital,Royal Surrey County Hospital,51.24101639,-0.60744828
+NHS Hospital,Yeovil District Hospital,50.94484711,-2.634698391
+NHS Hospital,Bristol Royal Infirmary,51.45918655,-2.596124649
+NHS Hospital,St Michael's Hospital,51.45913696,-2.599376917
+NHS Hospital,Bristol Eye Hospital,51.45843887,-2.594531536
+NHS Hospital,University Of Bristol Dental Hospital,51.45861816,-2.595181704
+NHS Hospital,Bristol Royal Hospital For Children,51.45775223,-2.597314835
+NHS Hospital,South Bristol Community Hospital,51.41099548,-2.584929228
+NHS Hospital,Weston General Hospital,51.32234192,-2.971384764
+NHS Hospital,Torbay Hospital,50.48232269,-3.553790569
+NHS Hospital,Brixham Hospital - Torbay and South Devon NHS Foundation Trust,50.38945007,-3.513809919
+NHS Hospital,Dawlish Hospital - Torbay and South Devon NHS Foundation Trust,50.58058929,-3.474774122
+NHS Hospital,Newton Abbot Community Hospital - Torbay and South Devon NHS Foundation Trust,50.53936386,-3.612241745
+NHS Hospital,Paignton Health and Welllbeing Centre,50.43714523,-3.568786621
+NHS Hospital,Teignmouth Hospital,50.54837418,-3.511145592
+NHS Hospital,Totnes Hospital - Torbay and South Devon NHS Foundation Trust,50.4327774,-3.68417573
+NHS Hospital,Bradford Royal Infirmary,53.8059845,-1.794681668
+NHS Hospital,St Lukes Hospital,53.78370285,-1.760688424
+NHS Hospital,Shipley Hospital,53.83343506,-1.786266565
+NHS Hospital,Eccleshill Community Hospital,53.82307816,-1.712111712
+NHS Hospital,Southend Hospital,51.55383682,0.688631773
+NHS Hospital,Brentwood Community Hospital,51.62355042,0.316414982
+NHS Hospital,Royal Free Hospital,51.55322266,-0.165309235
+NHS Hospital,Finchley Memorial Hospital,51.60545731,-0.176605821
+NHS Hospital,Edgware Community Hospital,51.6064949,-0.271227777
+NHS Hospital,The Royal National Orthopaedic Hospital (Stanmore),51.63256454,-0.31042096
+NHS Hospital,Royal National Orthopaedic Hospital (Bolsover Street),51.52331161,-0.143274531
+NHS Hospital,North Middlesex University Hospital,51.61309433,-0.07373514
+NHS Hospital,Hillingdon Hospital,51.52607727,-0.461160362
+NHS Hospital,Mount Vernon Hospital,51.61492538,-0.445808202
+NHS Hospital,Kingston Hospital,51.41482544,-0.282609493
+NHS Hospital,Musgrove Park Hospital,51.01157761,-3.121679544
+NHS Hospital,Dorset County Hospital,50.71294403,-2.446922541
+NHS Hospital,Manor Hospital,52.58233261,-1.998909116
+NHS Hospital,Victoria Central Hospital,53.41566086,-3.045850515
+NHS Hospital,Arrowe Park Hospital,53.36962891,-3.096800804
+NHS Hospital,Clatterbridge Hospital,53.33288956,-3.024122
+NHS Hospital,Whiston Hospital,53.42047501,-2.784939051
+NHS Hospital,St Helens Hospital,53.43953323,-2.718886852
+NHS Hospital,Liverpool Heart and Chest Hospital,53.4111557,-2.89797473
+NHS Hospital,Alder Hey Children's NHS Foundation Trust,53.41930389,-2.897731543
+NHS Hospital,Leighton Hospital,53.11769104,-2.475848436
+NHS Hospital,Victoria Infirmary (Northwich),53.26189423,-2.519784451
+NHS Hospital,The Christie main site,53.42977142,-2.230110168
+NHS Hospital,North Devon District Hospital,51.09217453,-4.0504179
+NHS Hospital,Ilfracombe Tyrrell Hospital,51.20452118,-4.124407291
+NHS Hospital,Holsworthy Hospital,50.81832886,-4.349647999
+NHS Hospital,Bideford Hospital,51.01782608,-4.21274519
+NHS Hospital,Torrington Hospital,50.9547348,-4.136956215
+NHS Hospital,South Molton Hospital,51.01707077,-3.839224815
+NHS Hospital,Bedford Hospital South Wing,52.12826538,-0.472480506
+NHS Hospital,Bedford Hospital North Wing,52.14118958,-0.46176514
+NHS Hospital,Luton and Dunstable Hospital,51.89414597,-0.474415451
+NHS Hospital,St Monicas Hospital,54.11840439,-1.189312696
+NHS Hospital,The York Hospital,53.96895218,-1.084269643
+NHS Hospital,"Malton, Norton & District Hospital",54.13724518,-0.806531847
+NHS Hospital,White Cross Rehabilitation Hospital,53.97165298,-1.076465845
+NHS Hospital,St Helens Rehabilitation Hospital,53.94364166,-1.106458068
+NHS Hospital,Harrogate District Hospital,53.99380875,-1.517558336
+NHS Hospital,Ripon and District Community Hospital,54.13543701,-1.52717948
+NHS Hospital,The New Selby War Memorial Hospital - Harrogate and District NHS Foundation Trust,53.77748871,-1.078320146
+NHS Hospital,Airedale General Hospital,53.89801788,-1.962679625
+NHS Hospital,Castleberg Hospital,54.06954956,-2.292192698
+NHS Hospital,Skipton General Hospital,53.95569611,-2.018997669
+NHS Hospital,Sheffield Children's Hospital,53.38060379,-1.490613818
+NHS Hospital,The Queen Elizabeth Hospital,52.75660706,0.446693152
+NHS Hospital,Paulton Hospital,51.29867935,-2.493281364
+NHS Hospital,"Royal United Hospitals, Bath",51.39167023,-2.39120388
+NHS Hospital,Poole Hospital,50.72199249,-1.973102927
+NHS Hospital,Milton Keynes Hospital,52.02637482,-0.73576653
+NHS Hospital,Colchester General Hospital,51.91016388,0.899196804
+NHS Hospital,Essex County Hospital,51.8870697,0.889149308
+NHS Hospital,Halstead Hospital,51.94809341,0.637966037
+NHS Hospital,Bognor Regis War Memorial Hospital,50.79336548,-0.675404251
+NHS Hospital,Frimley Park Hospital,51.31966782,-0.742014408
+NHS Hospital,St Ann's Hospital,50.69916534,-1.928103089
+NHS Hospital,Nightingale House/Court/Florence House,50.71672821,-1.904407144
+NHS Hospital,Alderney Hospital,50.7497139,-1.940967441
+NHS Hospital,Kimmeridge Court,50.69916534,-1.928103089
+NHS Hospital,Fairmile House,50.74319458,-1.792006493
+NHS Hospital,Pebble Lodge,50.71672821,-1.904407144
+NHS Hospital,Oakcroft,50.78026581,-1.97830379
+NHS Hospital,Weymouth Community Hospital,50.62104034,-2.450997829
+NHS Hospital,Westhaven Hospital,50.615242,-2.480030775
+NHS Hospital,Portland Hospital,50.5658226,-2.444808483
+NHS Hospital,Bridport Community Hospital,50.74161148,-2.769914389
+NHS Hospital,Blandford Community Hospital,50.86307526,-2.167970181
+NHS Hospital,Westminster Memorial Hospital,51.00472641,-2.200136185
+NHS Hospital,Yeatman Hospital,50.94966888,-2.519826412
+NHS Hospital,Wareham Community Hospital,50.68698883,-2.116732836
+NHS Hospital,Victoria Hospital,50.80220032,-1.995904088
+NHS Hospital,Swanage Community Hospital,50.60551453,-1.961199522
+NHS Hospital,St Leonards Community Hospital (Dorset),50.81726456,-1.856563926
+NHS Hospital,Christchurch Hospital,50.74516678,-1.790141106
+NHS Hospital,Royal Bournemouth Hospital,50.74748611,-1.820505619
+NHS Hospital,Elmville Unit at Monkton Hall,54.96662521,-1.501260161
+NHS Hospital,South Tyneside District Hospital,54.97120285,-1.428439617
+NHS Hospital,Primrose Hill Hospital,54.967659,-1.485705614
+NHS Hospital,Palmer Community Hospital,54.98065948,-1.49196136
+NHS Hospital,West Cornwall Hospital (Penzance),50.1220665,-5.542964458
+NHS Hospital,St Michael's Hospital,50.1803627,-5.42441082
+NHS Hospital,Royal Cornwall Hospital (Treliske),50.26656723,-5.094250202
+NHS Hospital,Aintree University Hospital,53.46632767,-2.931089401
+NHS Hospital,Royal Liverpool University Hospital,53.40951157,-2.964794159
+NHS Hospital,Liverpool Women's NHS Foundation Trust,53.3984642,-2.960062504
+NHS Hospital,The Walton Centre ,53.46640015,-2.930985451
+NHS Hospital,King George Hospital,51.58054352,0.112121284
+NHS Hospital,Queen's Hospital,51.56942749,0.180405304
+NHS Hospital,Barnsley Hospital,53.55913544,-1.499477983
+NHS Hospital,Rotherham Hospital,53.41397476,-1.342865467
+NHS Hospital,Chesterfield Royal Hospital,53.2362175,-1.400036573
+NHS Hospital,The Mount,53.80408096,-1.558837056
+NHS Hospital,St Mary's Hospital,53.79990768,-1.612384319
+NHS Hospital,Newsam Centre,53.80493927,-1.471471786
+NHS Hospital,Becklin Centre,53.80526352,-1.524477124
+NHS Hospital,Royal Papworth Hospital,52.17238617,0.136189625
+NHS Hospital,Stamford and Rutland Hospital,52.65537262,-0.468735933
+NHS Hospital,Peterborough City Hospital,52.58392334,-0.279370904
+NHS Hospital,James Paget University Hospital,52.5616684,1.717994452
+NHS Hospital,West Suffolk Hospital,52.23166275,0.70919019
+NHS Hospital,Addenbrooke's,52.17513275,0.140753239
+NHS Hospital,Rosie Hospital,52.17326355,0.139422864
+NHS Hospital,Royston Hospital,52.04151917,-0.022399887
+NHS Hospital,Saffron Walden Community Hospital,52.02359009,0.256292522
+NHS Hospital,Wellington Community Hospital,50.97667694,-3.227399349
+NHS Hospital,Chard  Community Hospital,50.875,-2.952359438
+NHS Hospital,Minehead Community Hospital,51.20011902,-3.461884022
+NHS Hospital,Williton Community Hospital,51.1628952,-3.323194981
+NHS Hospital,Shepton Mallet Community Hospital,51.19057846,-2.562471867
+NHS Hospital,West Mendip Community Hospital,51.16048431,-2.699217319
+NHS Hospital,Crewkerne Community Hospital,50.88012314,-2.797923803
+NHS Hospital,South Petherton Community Hospital,50.95209503,-2.798842669
+NHS Hospital,Wincanton Community Hospital,51.05875778,-2.418154716
+NHS Hospital,Dene Barton Community Hospital ,51.03759003,-3.182197571
+NHS Hospital,Frome Community Hospital ,51.23731995,-2.311554432
+NHS Hospital,Royal Devon and Exeter Hospital (Wonford),50.71670914,-3.506666422
+NHS Hospital,Heavitree Hospital,50.72439194,-3.514011145
+NHS Hospital,Okehampton Community Hospital,50.74192047,-3.99718833
+NHS Hospital,Ottery St Mary Hospital,50.75011826,-3.291560888
+NHS Hospital,Tiverton and District Hospital,50.90941238,-3.492953062
+NHS Hospital,Honiton Hospital,50.79493332,-3.186563015
+NHS Hospital,Axminster Hospital,50.7838974,-2.996254683
+NHS Hospital,Exmouth Hospital,50.62055206,-3.401594639
+NHS Hospital,Victoria Hospital (Sidmouth),50.68161392,-3.239641666
+NHS Hospital,Rampton Hospital,53.2903862,-0.838197649
+NHS Hospital,Lings Bar Hospital,52.92256546,-1.09980166
+NHS Hospital,Southampton General Hospital,50.93302155,-1.435089946
+NHS Hospital,Princess Anne Hospital,50.93526077,-1.434849381
+NHS Hospital,Charles Clifford Dental Hospital,53.37979889,-1.493765235
+NHS Hospital,Royal Hallamshire Hospital,53.37835693,-1.493316293
+NHS Hospital,Northern General Hospital,53.40887833,-1.460876465
+NHS Hospital,Weston Park Hospital,53.38025284,-1.494917393
+NHS Hospital,St Mary,50.80013657,-1.063932061
+NHS Hospital,Queen Alexandra Hospital,50.85029984,-1.069917679
+NHS Hospital,Gosport War Memorial Hospital - Portsmouth Hospitals NHS Trust,50.79306412,-1.148066759
+NHS Hospital,Royal Berkshire Hospital,51.4510231,-0.959315777
+NHS Hospital,Prince Charles Eye Unit,51.47354507,-0.614692628
+NHS Hospital,Guy's Hospital,51.50346375,-0.08680556
+NHS Hospital,St Thomas',51.49795914,-0.118890636
+NHS Hospital,University Hospital Lewisham,51.45433044,-0.017036438
+NHS Hospital,Croydon University Hospital,51.38912964,-0.108768813
+NHS Hospital,Purley War Memorial Hospital,51.3407402,-0.114451215
+NHS Hospital,St George's Hospital,51.42668152,-0.175704554
+NHS Hospital,Queen Mary - St George's University Hospitals NHS Foundation Trust,51.45555115,-0.241715029
+NHS Hospital,St Austell Community Hospital - Cornwall Partnership NHS Foundation Trust,50.32788467,-4.772349834
+NHS Hospital,Newquay Hospital - Cornwall Partnership NHS Foundation Trust,50.41106415,-5.074197769
+NHS Hospital,Camborne Redruth Community Hospital - Cornwall Partnership NHS Foundation Trust,50.22938919,-5.244363308
+NHS Hospital,Bodmin Hospital - Cornwall Partnership NHS Foundation Trust,50.46724701,-4.74114418
+NHS Hospital,Stratton Hospital - Cornwall Partnership NHS Foundation Trust,50.83075333,-4.517526627
+NHS Hospital,Launceston Hospital - Cornwall Partnership NHS Foundation Trust,50.62839127,-4.359761238
+NHS Hospital,Warwick Hospital,52.28995132,-1.583200693
+NHS Hospital,Stratford Hospital,52.19526672,-1.713385463
+NHS Hospital,Ellen Badger Hospital,52.0668602,-1.622537017
+NHS Hospital,Royal Stoke University Hospital,53.00315857,-2.212051868
+NHS Hospital,Sir Robert Peel Hospital,52.6206665,-1.723852634
+NHS Hospital,"Diana, Princess Of Wales Hospital",53.54485703,-0.096213497
+NHS Hospital,Scunthorpe General Hospital,53.58758545,-0.667584062
+NHS Hospital,Congleton War Memorial Hospital,53.15802765,-2.202660799
+NHS Hospital,Knutsford and District Community Hospital,53.30200577,-2.378590345
+NHS Hospital,Macclesfield District General Hospital,53.26232529,-2.141059637
+NHS Hospital,Countess Of Chester Hospital,53.21153259,-2.902284384
+NHS Hospital,Ellesmere Port Hospital,53.2677803,-2.911025286
+NHS Hospital,King's College Hospital,51.46807861,-0.093901388
+NHS Hospital,King's Mill Hospital,53.13455582,-1.233566165
+NHS Hospital,Mansfield Community Hospital,53.14136124,-1.206266642
+NHS Hospital,Newark Hospital,53.0675087,-0.806145906
+NHS Hospital,Derriford Hospital,50.41672897,-4.113671303
+NHS Hospital,Royal Eye Infirmary,50.41672897,-4.113671303
+NHS Hospital,University Hospital (Coventry),52.42121506,-1.438388586
+NHS Hospital,Hospital Of St Cross,52.36527634,-1.259016037
+NHS Hospital,Hornsey Central Neighbourhood Health Centre,51.5834198,-0.13102442
+NHS Hospital,The Whittington Hospital,51.56647873,-0.139077902
+NHS Hospital,Cassel Hospital,51.43291092,-0.308085978
+NHS Hospital,Broadmoor Hospital,51.36908722,-0.780985534
+NHS Hospital,The Robert Jones and Agnes Hunt Orthopaedic Hospital,52.88452911,-3.03311491
+NHS Hospital,New Cross Hospital,52.59972763,-2.095540524
+NHS Hospital,Sunderland Royal Hospital,54.90221024,-1.410297871
+NHS Hospital,Sunderland Eye Infirmary,54.8890686,-1.381056666
+NHS Hospital,"The County Hospital, Wye Valley NHS Trust",52.05873489,-2.707180262
+NHS Hospital,Bromyard Community Hospital,52.18632889,-2.506896019
+NHS Hospital,Leominster Community Hospital,52.22218704,-2.739360332
+NHS Hospital,Ross on Wye Community Hospital ,51.91257477,-2.583386898
+NHS Hospital,George Eliot Hospital,52.51258469,-1.478424549
+NHS Hospital,Harplands Hospital,53.00043869,-2.208298683
+NHS Hospital,Norfolk and Norwich University Hospital,52.61754227,1.22118938
+NHS Hospital,Cromer and District Hospital,52.92356491,1.309174538
+NHS Hospital,Salford Royal,53.48754883,-2.323409557
+NHS Hospital,Royal Bolton Hospital,53.55396271,-2.429878712
+NHS Hospital,Tameside & Glossop Integrated Care NHS Foundation Trust,53.49153519,-2.071418524
+NHS Hospital,Wellbeing Norfolk & Waveney,52.65953064,1.250886321
+NHS Hospital,Julian Hospital,52.63298035,1.262589574
+NHS Hospital,"Northgate Hospital, Gt Yarmouth",52.61719513,1.730520725
+NHS Hospital,Bickley Day Hospital,52.51786423,1.017445207
+NHS Hospital,Carlton Court,52.45330048,1.696761727
+NHS Hospital,Savernake Hospital,51.41540909,-1.704911351
+NHS Hospital,The Great Western Hospital,51.53853226,-1.727185845
+NHS Hospital,Chippenham Community Hospital,51.45254135,-2.126694918
+NHS Hospital,Trowbridge Community Hospital,51.32529831,-2.209868193
+NHS Hospital,Basingstoke and North Hampshire Hospital,51.28063583,-1.109903693
+NHS Hospital,Royal Hampshire County Hospital,51.06171036,-1.329156041
+NHS Hospital,Andover War Memorial Hospital,51.2157402,-1.494678259
+NHS Hospital,Darent Valley Hospital,51.43495178,0.258659244
+NHS Hospital,Russells Hall Hospital,52.50294876,-2.118503094
+NHS Hospital,Guest Hospital,52.52050018,-2.072715282
+NHS Hospital,Corbett Hospital,52.46540833,-2.146383286
+NHS Hospital,Cumberland Infirmary,54.89650345,-2.957777023
+NHS Hospital,Penrith Hospital,54.65699768,-2.743259668
+NHS Hospital,Cockermouth Community Hospital,54.6668129,-3.358580589
+NHS Hospital,Kettering General Hospital,52.40114594,-0.741529107
+NHS Hospital,Salisbury District Hospital,51.04394913,-1.789808512
+NHS Hospital,Devizes Community Hospital,51.35458374,-1.993215919
+NHS Hospital,St Mary's Hospital,52.39410019,-0.722185016
+NHS Hospital,Isebrook Hospital,52.29767227,-0.683344126
+NHS Hospital,Great Ormond Street Hospital ,51.52220917,-0.119909525
+NHS Hospital,Bassetlaw Hospital,53.31655502,-1.110268831
+NHS Hospital,Doncaster Royal Infirmary,53.53078461,-1.108923912
+NHS Hospital,Montagu Hospital,53.49981689,-1.284931421
+NHS Hospital,Retford Hospital,53.3254509,-0.950618625
+NHS Hospital,Moorfields Eye Hospital (City Road),51.52724457,-0.089874275
+NHS Hospital,"Discovery House - The Fens, The Vales & The Wolds",53.242836,-0.557784677
+NHS Hospital,Peter Hodgkinson Centre - Charlesworth Ward & Conolly Ward,53.23357773,-0.51962018
+NHS Hospital,Manthorpe Centre,52.92108917,-0.640699148
+NHS Hospital,Medway Maritime Hospital,51.37985992,0.542076051
+NHS Hospital,Queen Victoria Hospital (East Grinstead),51.13507462,-0.002886042
+NHS Hospital,Green Parks House,51.36606979,0.056682058
+NHS Hospital,Oxleas House,51.47819138,0.050057109
+NHS Hospital,Memorial Hospital (Greenwich),51.46857452,0.064125076
+NHS Hospital,Queen Mary,51.41904068,0.101675332
+NHS Hospital,The Royal Marsden Hospital (London),51.49056244,-0.172550783
+NHS Hospital,The Royal Marsden Hospital (Surrey),51.34347916,-0.19110027
+NHS Hospital,Birmingham Children's Hospital,52.48489761,-1.8937397
+NHS Hospital,Chelsea and Westminster Hospital,51.48431015,-0.181629702
+NHS Hospital,Princess Alexandra Hospital,51.77153015,0.085471295
+NHS Hospital,Homerton University Hospital,51.55063248,-0.046084356
+NHS Hospital,Springfield University Hospital,51.43735886,-0.172358453
+NHS Hospital,Barnes Hospital,51.46709061,-0.256503701
+NHS Hospital,Tolworth Hospital,51.37908554,-0.288502634
+NHS Hospital,Queen Elizabeth Hospital,54.93938446,-1.580765486
+NHS Hospital,Dunston Hill Hospital,54.94639587,-1.659452677
+NHS Hospital,Leeds General Infirmary,53.80146027,-1.552119255
+NHS Hospital,Leeds Dental Hospital,53.80337524,-1.555701375
+NHS Hospital,Wharfedale Hospital,53.91436005,-1.700584412
+NHS Hospital,St James's Hospital,53.80687332,-1.520343781
+NHS Hospital,Seacroft Hospital,53.80659103,-1.470889211
+NHS Hospital,Chapel Allerton Hospital,53.82263947,-1.529794812
+NHS Hospital,St George's,52.81059265,-2.109073639
+NHS Hospital,Leigh Infirmary,53.50441742,-2.512239456
+NHS Hospital,Royal Albert Edward Infirmary,53.55774307,-2.629076481
+NHS Hospital,Wrightington Hospital,53.58981323,-2.711495161
+NHS Hospital,Royal Orthopaedic Hospital,52.42113876,-1.960812807
+NHS Hospital,Queen Elizabeth Hospital Birmingham,52.45014954,-1.941761851
+NHS Hospital,University College Hospital,51.5248909,-0.136896163
+NHS Hospital,University College Hospital at Westmoreland Street,51.51958084,-0.149753928
+NHS Hospital,The Royal London Hospital For Integrated Medicine,51.52173996,-0.121384807
+NHS Hospital,"National Hospital For Neurology and Neurosurgery, Queen Square",51.52217102,-0.121986859
+NHS Hospital,Hospital For Tropical Diseases,51.52315903,-0.135395616
+NHS Hospital,Fulbourn Hospital,52.1844902,0.188315377
+NHS Hospital,Harefield Hospital,51.60673141,-0.482753932
+NHS Hospital,Royal Brompton Hospital,51.48974228,-0.170840546
+NHS Hospital,Freeman Hospital,55.0027771,-1.593362212
+NHS Hospital,The Royal Victoria Infirmary,54.98021698,-1.618839502
+NHS Hospital,Newcastle Dental Hospital,54.98150253,-1.62270236
+NHS Hospital,Great North Childrens Hospital,54.98021698,-1.618839502
+NHS Hospital,Cheltenham General Hospital,51.89212418,-2.07186842
+NHS Hospital,Gloucestershire Royal Hospital,51.8663826,-2.232058525
+NHS Hospital,Moore Cottage Hospital,51.88631058,-1.756776094
+NHS Hospital,Thirlestaine Breast Centre,51.88847351,-2.069857597
+NHS Hospital,Tetbury Hospital,51.63517761,-2.154729366
+NHS Hospital,Berwick Infirmary,55.77328873,-2.004963875
+NHS Hospital,Alnwick Infirmary,55.41094208,-1.697199821
+NHS Hospital,Hexham General Hospital,54.97036743,-2.095677853
+NHS Hospital,Haltwhistle War Memorial Hospital,54.97010803,-2.462919712
+NHS Hospital,Blyth Community Hospital,55.12787628,-1.514920115
+NHS Hospital,Northumbria Healthcare NHS Foundation Trust,55.02046204,-1.508162379
+NHS Hospital,Wansbeck General Hospital,55.18431091,-1.546586394
+NHS Hospital,Rothbury Community Hospital,55.30677414,-1.913899302
+NHS Hospital,North Tyneside General Hospital,55.02524185,-1.467324495
+NHS Hospital,London Road Community Hospital,52.91431808,-1.468631864
+NHS Hospital,Royal Derby Hospital,52.91155624,-1.514264703
+NHS Hospital,Churchill Hospital,51.75033569,-1.214694381
+NHS Hospital,Horton General Hospital,52.05440903,-1.337175965
+NHS Hospital,John Radcliffe Hospital,51.76387405,-1.219792008
+NHS Hospital,St Peter's Hospital,51.37783432,-0.527046025
+NHS Hospital,Ashford Hospital,51.44402313,-0.472798347
+NHS Hospital,East Cleveland Hospital,54.56526947,-0.936341345
+NHS Hospital,Friarage Hospital,54.34233475,-1.430518746
+NHS Hospital,Guisborough General Hospital ,54.53883743,-1.052146792
+NHS Hospital,The James Cook University Hospital,54.55175781,-1.214789987
+NHS Hospital,Royal Lancaster Infirmary,54.04273224,-2.799217224
+NHS Hospital,Furness General Hospital,54.13640213,-3.20788455
+NHS Hospital,Westmorland General Hospital,54.30670929,-2.732536793
+NHS Hospital,The Gordon Hospital,51.49234009,-0.135774717
+NHS Hospital,The Riverside Centre,51.52607727,-0.461160362
+NHS Hospital,Lambeth Hospital,51.46531677,-0.122234575
+NHS Hospital,Maudsley Hospital,51.46873856,-0.091426156
+NHS Hospital,Bethlem Royal Hospital,51.38092041,-0.029753098
+NHS Hospital,Withernsea Hospital,53.7285347,0.034033589
+NHS Hospital,Westlands - Inpatient Unit,53.74201202,-0.384643078
+NHS Hospital,Newbridges - Inpatient Unit,53.74993896,-0.308325261
+NHS Hospital,Maister Lodge - Inpatient Unit,53.77357864,-0.286600292
+NHS Hospital,Hawthorne Court - Inpatient Unit,53.84576416,-0.434097558
+NHS Hospital,Avondale Assessment Unit and Psychiatric Intensive Care Unit,53.74435806,-0.362185776
+NHS Hospital,Southmead Hospital,51.49481201,-2.591000319
+NHS Hospital,Frenchay Hospital,51.4966011,-2.528403997
+NHS Hospital,Cossham Hospital,51.46889114,-2.516105652
+NHS Hospital,St Martins Hospital (Bath),51.35817337,-2.372606993
+NHS Hospital,Blackberry Hill Hospital,51.48315048,-2.538818598
+NHS Hospital,Wiltshire IAPT,51.33915329,-1.981288552
+NHS Hospital,Callington Road Hospital,51.4312706,-2.557540894
+NHS Hospital,St Helier Hospital,51.38031387,-0.183627352
+NHS Hospital,Sutton Hospital,51.34545517,-0.191079825
+NHS Hospital,Queen Mary's Hospital For Children,51.38031387,-0.183627352
+NHS Hospital,Epsom Hospital,51.32551956,-0.273216724
+NHS Hospital,William Harvey Hospital (Ashford),51.14148712,0.916223049
+NHS Hospital,Buckland Hospital,51.13205338,1.292394757
+NHS Hospital,Queen Elizabeth The Queen Mother Hospital,51.37805176,1.389398694
+NHS Hospital,Kent and Canterbury Hospital,51.2665863,1.087097526
+NHS Hospital,University Hospital Of Hartlepool,54.70240021,-1.227821112
+NHS Hospital,University Hospital Of North Tees,54.58285904,-1.347565413
+NHS Hospital,Southport and Formby District General Hospital,53.63356018,-2.978807688
+NHS Hospital,Ormskirk and District General Hospital,53.56462097,-2.871237278
+NHS Hospital,Moorgreen Hospital,50.9286499,-1.32337296
+NHS Hospital,Fareham Community Hospital,50.87100983,-1.275508523
+NHS Hospital,Ashworth Hospital,53.51867294,-2.915359974
+NHS Hospital,Ribbleton Hospital,53.77164841,-2.657579422
+NHS Hospital,Queen Victoria Hospital,54.07287216,-2.858618259
+NHS Hospital,Fairfield General Hospital,53.60042572,-2.255607843
+NHS Hospital,North Manchester General Hospital,53.51788712,-2.229486942
+NHS Hospital,Royal Oldham Hospital,53.55325317,-2.121816158
+NHS Hospital,Rochdale Infirmary,53.62428665,-2.160136938
+NHS Hospital,Birch Hill Hospital (Floyd Unit),53.64026642,-2.121371508
+NHS Hospital,Hull Royal Infirmary,53.74443436,-0.358168989
+NHS Hospital,Castle Hill Hospital,53.7767334,-0.444969475
+NHS Hospital,Lincoln County Hospital,53.23357773,-0.51962018
+NHS Hospital,Pilgrim Hospital,52.99112701,-0.009952853
+NHS Hospital,St Mary's Hospital,52.76593781,-0.877281189
+NHS Hospital,Leicester Royal Infirmary,52.62678528,-1.135946155
+NHS Hospital,Glenfield Hospital,52.65436554,-1.180003047
+NHS Hospital,Leicester General Hospital,52.62992859,-1.081749201
+NHS Hospital,Maidstone Hospital,51.27366257,0.483988225
+NHS Hospital,Stone House Hospital,51.44478607,0.245343298
+NHS Hospital,Tunbridge Wells Hospital at Pembury,51.14845276,0.307484597
+NHS Hospital,Watford General Hospital,51.64859009,-0.405277938
+NHS Hospital,St Albans City Hospital,51.76007462,-0.343948692
+NHS Hospital,Hemel Hempstead Hospital,51.75083923,-0.468585968
+NHS Hospital,Lister Hospital,51.92461014,-0.212711543
+NHS Hospital,New QEII Hospital,51.78282928,-0.187686712
+NHS Hospital,Hertford County Hospital,51.79648972,-0.088494822
+NHS Hospital,Stepping Hill Hospital,53.38378143,-2.132004976
+NHS Hospital,The Tower Hamlets Centre For Mental Health,51.5250473,-0.04219196
+NHS Hospital,Alexandra Hospital,52.27977753,-1.912112117
+NHS Hospital,Kidderminster Hospital & Treatment Centre,52.38604736,-2.261150599
+NHS Hospital,Worcestershire Royal Hospital,52.19151688,-2.179341078
+NHS Hospital,Wonford House,50.7154007,-3.506284475
+NHS Hospital,Franklyn Community Hospital,50.7124176,-3.549404383
+NHS Hospital,Halton General Hospital,53.32327271,-2.694666147
+NHS Hospital,Warrington Hospital,53.39397812,-2.610702753
+NHS Hospital,Prospect Park Hospital,51.44914627,-1.014733672
+NHS Hospital,Huddersfield Royal Infirmary,53.65547562,-1.816323161
+NHS Hospital,Calderdale Royal Hospital,53.70482254,-1.857493639
+NHS Hospital,Nottingham University Hospitals NHS Trust - City Campus,52.99123764,-1.158413172
+NHS Hospital,Nottingham University Hospitals NHS Trust - Queen's Medical Centre Campus,52.94380188,-1.185941815
+NHS Hospital,Aldrington Centre,50.83014679,-0.184233904
+NHS Hospital,Mill View Hospital,50.84204102,-0.189752132
+NHS Hospital,The Acre,50.80953217,-0.382770181
+NHS Hospital,The Hellingly Centre,50.89032364,0.263305724
+NHS Hospital,Amberstone Hospital,50.88183212,0.275532901
+NHS Hospital,Langley Green Hospital,51.13195419,-0.189015657
+NHS Hospital,"Tees, Esk, Wear Valley NHS Trust (Durham)",54.54348755,-1.591122627
+NHS Hospital,"Auckland Park Hospital, Bishop Auckland",54.65484238,-1.680740595
+NHS Hospital,"West Lane Hospital, Middlesbrough",54.56212616,-1.257134318
+NHS Hospital,"West Park Hospital, Darlington",54.54348755,-1.591122627
+NHS Hospital,"Sandwell Park Hospital, Hartlepool",54.69326782,-1.212324739
+NHS Hospital,"Cross Lane Hospital, Scarborough",54.29606247,-0.424973875
+NHS Hospital,Hopewood Park,54.86393738,-1.369304776
+NHS Hospital,Northgate Hospital,55.18491364,-1.711871028
+NHS Hospital,Ferndene,54.94983292,-1.841312885
+NHS Hospital,St George's Park,55.17856216,-1.682789326
+NHS Hospital,St Nicholas Hospital,55.0064888,-1.633084178
+NHS Hospital,Monkwearmouth Hospital,54.9245491,-1.386769295
+NHS Hospital,Bowmere Hospital,53.21154785,-2.898810625
+NHS Hospital,Conquest Hospital,50.88516617,0.567284167
+NHS Hospital,Eastbourne District General Hospital,50.78696823,0.271121651
+NHS Hospital,Bexhill Hospital,50.85070419,0.475511163
+NHS Hospital,Tickhill Road Hospital,53.49481583,-1.145960689
+NHS Hospital,Pontefract Hospital,53.69047928,-1.308131099
+NHS Hospital,Pinderfields Hospital,53.69242096,-1.488540292
+NHS Hospital,Dewsbury and District Hospital,53.70225525,-1.651861906
+NHS Hospital,Fieldhead Hospital,53.69734192,-1.494039178
+NHS Hospital,Kendray Hospital,53.54695511,-1.454602242
+NHS Hospital,Royal Sussex County Hospital,50.81946945,-0.118162483
+NHS Hospital,Brighton General Hospital,50.83045959,-0.115462601
+NHS Hospital,Royal Alexandra Children's Hospital,50.81946945,-0.118162483
+NHS Hospital,Sussex Eye Hospital,50.81879425,-0.117621705
+NHS Hospital,Princess Royal Hospital,50.9910965,-0.090267994
+NHS Hospital,Sandwell District General Hospital,52.52807999,-1.988857388
+NHS Hospital,City Hospital,52.4886322,-1.932492137
+NHS Hospital,Rowley Regis Hospital,52.48070145,-2.052065849
+NHS Hospital,Blackpool Victoria Hospital,53.82060623,-3.015853167
+NHS Hospital,Clifton Hospital,53.74435043,-3.007234573
+NHS Hospital,Lancashire Bowel Cancer Screening Programme - Fleetwood Hospital,53.92620087,-3.009324551
+NHS Hospital,Chorley and South Ribble Hospital,53.66609192,-2.636446476
+NHS Hospital,Royal Preston Hospital,53.79151154,-2.706829548
+NHS Hospital,Bishop Auckland Hospital,54.65584946,-1.678531766
+NHS Hospital,Chester Le Street Hospital,54.85093689,-1.575047731
+NHS Hospital,University Hospital Of North Durham,54.78850174,-1.593818784
+NHS Hospital,Shotley Bridge Hospital,54.8690834,-1.842782617
+NHS Hospital,Darlington Memorial Hospital,54.53037643,-1.563717365
+NHS Hospital,Stoke Mandeville Hospital,51.79797745,-0.801997542
+NHS Hospital,Wycombe Hospital,51.62644196,-0.753413498
+NHS Hospital,Amersham Hospital,51.66300201,-0.621415079
+NHS Hospital,Buckingham Community Hospital,52.0015831,-0.985668004
+NHS Hospital,Thame Community Hospital,51.74531555,-0.969993711
+NHS Hospital,Chalfonts and Gerrards Cross Hospital,51.60741043,-0.561796904
+NHS Hospital,Marlow Community Hospital,51.57357025,-0.770415902
+NHS Hospital,Burnley General Hospital,53.81042862,-2.227864027
+NHS Hospital,Royal Blackburn Hospital,53.73556519,-2.462701321
+NHS Hospital,Pendle Community Hospital,53.83680725,-2.213328123
+NHS Hospital,Accrington Victoria Hospital,53.75958633,-2.366906404
+NHS Hospital,Clitheroe Community Hospital,53.88528824,-2.365998745
+NHS Hospital,Ardenleigh,52.51745605,-1.834641218
+NHS Hospital,Ashcroft,52.49386215,-1.932395816
+NHS Hospital,David Bromley House,52.3798027,-1.744747996
+NHS Hospital,Endeavour Court,52.52388382,-1.857314825
+NHS Hospital,Grove Avenue,52.44133377,-1.883678913
+NHS Hospital,Hertford House,52.43833923,-1.808046699
+NHS Hospital,Hillis Lodge,52.40392685,-1.993620872
+NHS Hospital,Mary Seacole House,52.49386215,-1.932395816
+NHS Hospital,Reaside Clinic,52.40018845,-2.008318901
+NHS Hospital,Reservoir Court,52.52388382,-1.857314825
+NHS Hospital,Dan Mooney House,52.3798027,-1.744747996
+NHS Hospital,Zinnia Centre,52.44896698,-1.86745894
+NHS Hospital,Barberry ,52.44923401,-1.942314267
+NHS Hospital,Oleaster,52.44791794,-1.940764308
+NHS Hospital,Juniper Centre,52.44592667,-1.892876983
+NHS Hospital,Prestwich Hospital,53.53675079,-2.291450739
+NHS Hospital,Royal Shrewsbury Hospital,52.70926285,-2.793676376
+NHS Hospital,Princess Royal Hospital ,52.71211243,-2.511476278
+NHS Hospital,Farnham Road Hospital,51.23509216,-0.584450543
+NHS Hospital,St Martin's Hospital,51.27685547,1.106185555
+NHS Hospital,Littlebrook Hospital,51.44635773,0.241635442
+NHS Hospital,Priority House,51.27366257,0.483988225
+NHS Hospital,Colman Hospital,52.62220001,1.263663769
+NHS Hospital,Norwich Community Hospital,52.63391876,1.262482047
+NHS Hospital,Dereham Hospital,52.69001389,0.945718586
+NHS Hospital,North Walsham Hospital,52.81397629,1.387597919
+NHS Hospital,Kelling Hospital,52.91447449,1.1160568
+NHS Hospital,Swaffham Community Hospital,52.65101242,0.692217529
+NHS Hospital,Skegness and District General Hospital,53.14517975,0.332272351
+NHS Hospital,Johnson Community Hospital,52.8014679,-0.150874719
+NHS Hospital,John Coupland Hospital,53.41184616,-0.78477639
+NHS Hospital,County Hospital Louth,53.37100983,-0.008567074
+NHS Hospital,Whitworth Hospital,53.1509285,-1.575200796
+NHS Hospital,Walton Hospital,53.22159195,-1.442568302
+NHS Hospital,Babington Hospital,53.0189476,-1.485832691
+NHS Hospital,Ripley Hospital,53.04698563,-1.412392139
+NHS Hospital,Newholme Hospital,53.21879578,-1.672325253
+NHS Hospital,Clay Cross Hospital,53.16793442,-1.407211781
+NHS Hospital,Bolsover Hospital,53.23152924,-1.282501698
+NHS Hospital,Cavendish Hospital,53.26244736,-1.92124033
+NHS Hospital,Ilkeston Community Hospital,52.98809433,-1.320802927
+NHS Hospital,St Michael's Hospital,52.28884125,-1.594397306
+NHS Hospital,Brooklands Hospital,52.47120285,-1.744087577
+NHS Hospital,St Mary's Hospital (HQ),51.51697159,-0.173555061
+NHS Hospital,Charing Cross Hospital,51.48704529,-0.219920978
+NHS Hospital,Hammersmith Hospital,51.51742172,-0.234706819
+NHS Hospital,Queen Charlotte's & Chelsea Hospital,51.51742172,-0.234706819
+NHS Hospital,Western Eye Hospital,51.52070236,-0.163315639
+NHS Hospital,Southlands Hospital,50.84075928,-0.256132513
+NHS Hospital,St Richard's Hospital,50.84355545,-0.768012762
+NHS Hospital,Worthing Hospital,50.81669235,-0.363415062
+NHS Hospital,Brookfields Hospital,52.19712448,0.150816754
+NHS Hospital,Birmingham Dental Hospital and School of Dentistry,52.45087051,-1.914299846
+NHS Hospital,Moseley Hall Hospital,52.44592667,-1.892876983
+NHS Hospital,West Heath Hospital,52.39820862,-1.953763843
+NHS Hospital,Faversham Cottage Hospital,51.31455231,0.887836456
+NHS Hospital,Queen Victoria Memorial Hospital,51.36788177,1.142894864
+NHS Hospital,Sheppey Community Hospital,51.41540909,0.793075562
+NHS Hospital,Sittingbourne Memorial Hospital,51.33459854,0.736556947
+NHS Hospital,"Victoria Hospital, Deal",51.21939087,1.389496326
+NHS Hospital,Whitstable and Tankerton Hospital,51.36136246,1.050066829
+NHS Hospital,"Royal Victoria Hospital, Folkestone",51.08599472,1.171908617
+NHS Hospital,Edenbridge War Memorial Hospital,51.19034958,0.066651665
+NHS Hospital,Hawkhurst Hospital,51.04884338,0.489031434
+NHS Hospital,Sevenoaks Hospital,51.28826523,0.194744304
+NHS Hospital,Tonbridge Cottage Hospital,51.17807007,0.273479372
+NHS Hospital,Gravesham Community Hospital,51.4431839,0.365658641
+NHS Hospital,Lynfield Mount Hospital,53.80973053,-1.805339217
+NHS Hospital,Edward Street Hospital,52.51922607,-1.998733521
+NHS Hospital,Heath Lane Hospital,52.53797913,-1.991980553
+NHS Hospital,Hallam Street Hospital,52.52781677,-1.986425281
+NHS Hospital,Elmhurst Intermediate Care Centre,53.19564819,-2.531690359
+NHS Hospital,Nottingham University Hospitals NHS Trust - Ropewalk House,52.95198059,-1.156332135
+NHS Hospital,"Lanchester Road Hospital, Durham",54.8004303,-1.612225533
+NHS Hospital,Ambrose House,51.86611176,-2.204420328
+NHS Hospital,Goodmayes Hospital,51.57799149,0.11050193
+NHS Hospital,Arundel & District Hospital,50.85447693,-0.565244734
+NHS Hospital,Townend Court,53.77056503,-0.376976818
+NHS Hospital,Brampton War Memorial Hospital,54.9386673,-2.727175951
+NHS Hospital,Wigton Community Hospital,54.83044434,-3.171386957
+NHS Hospital,Workington Community Hospital,54.64269257,-3.55132699
+NHS Hospital,Walkergate Park,54.98936844,-1.561600447
+NHS Hospital,Townlands Memorial Hospital - Oxford Health NHS Foundation Trust ,51.53873825,-0.9079175
+NHS Hospital,Newham Centre for Mental Health,51.52047348,0.038419992
+NHS Hospital,The John Howard Centre,51.54803085,-0.037671819
+NHS Hospital,East Ham Care Centre,51.54092789,0.043299749
+NHS Hospital,Wokingham Hospital,51.41040421,-0.843685389
+NHS Hospital,Richmond Royal Hospital,51.46671295,-0.300415009
+NHS Hospital,Westwood Park Diagnostic Treatment Centre,53.76891708,-1.810428143
+NHS Hospital,Trafford Health Centre,53.45406342,-2.370665789
+NHS Hospital,Bridlington Hospital - City Health Care Partnership Cic,54.08653259,-0.215725005
+NHS Hospital,Cygnet Hospital Godden Green,51.27159882,0.23007901
+NHS Hospital,Cygnet Hospital Bierley,53.7685051,-1.732101202
+NHS Hospital,Cygnet Hospital Kewstoke,51.36587524,-2.964218616
+NHS Hospital,Optegra Eye Hospital Yorkshire,53.83239746,-1.710361242
+NHS Hospital,Optegra Eye Hospital Surrey,51.24115753,-0.613246143
+NHS Hospital,Optegra Eye Hospital Manchester,53.43009949,-2.249933243
+NHS Hospital,Optegra Eye Hospital Hampshire ,50.87654114,-1.247176766
+NHS Hospital,Nightingale Hospital,51.5218544,-0.16512911
+NHS Hospital,St Augustine's Independent Hospital,53.03343964,-2.187804699
+NHS Hospital,St Barnabas Hospital,50.40737152,-4.214307308
+NHS Hospital,Ecch Beccles Hospital,52.45414734,1.562366843
+NHS Hospital,Lakeside Medical Diagnostics - Billericay Community Hospital,51.62248611,0.400663167
+NHS Hospital,St Catherine's Hospital,53.3800354,-3.026516199
+NHS Hospital,Berkeley Hospital,51.69200897,-2.458486319
+NHS Hospital,Brackley Cottage Hospital,52.03092194,-1.143116951
+NHS Hospital,Ashwood Court Independent Hospital,53.47247696,-2.575762749
+NHS Hospital,Abbey Sefton Hospital,53.46632767,-2.931089401
+NHS Hospital,Royal Hospital For Neuro-Disability (West Hill),51.45220566,-0.213720351
+NHS Hospital,Haslemere Hospital ,51.09174728,-0.708267331
+NHS Hospital,St Mary's Hospital,50.71084595,-1.301315904
+NHS Hospital,Epsom Day Surgery Limited,51.33446121,-0.255309433
+NHS Hospital,Aspen - The Holly Private Hospital,51.62451172,0.032027494
+NHS Hospital,Highgate Private Hospital,51.57716751,-0.155873492
+NHS Hospital,The Princess Grace Hospital,51.52236557,-0.152913287
+NHS Hospital,Lister Hospital,51.48651886,-0.150487691
+NHS Hospital,The Portland Hospital For Women & Children,51.52292252,-0.144357011
+NHS Hospital,The Harley Street Clinic (Weymouth St),51.52035904,-0.148180172
+NHS Hospital,Granville Court,53.91744614,-0.164347708
+NHS Hospital,Forest Close,53.42111969,-1.520314932
+NHS Hospital,Forest Lodge,53.42111969,-1.520314932
+NHS Hospital,Queen Elizabeth Hospital,51.47819138,0.050057109
+NHS Hospital,The Priory Hospital Nottingham,52.97148132,-1.131278157
+NHS Hospital,Ida Darwin Hospital,52.18558121,0.200364873
+NHS Hospital,Mill View Court - Inpatient Unit,53.7767334,-0.444969475
+NHS Hospital,Alfred Bean Hospital,54.01216507,-0.423216522
+NHS Hospital,The Longley Centre,53.41022873,-1.46014297
+NHS Hospital,St Georges Hospital,50.72458267,-1.600407839
+NHS Hospital,John Munroe Hospital Site,53.12484741,-2.084958553
+NHS Hospital,The Chartwell Hospital,51.54800415,0.637353718
+NHS Hospital,St Luke's Hospital,52.52545929,0.993445992
+NHS Hospital,Riverdale Hospital,53.36991501,-1.518530488
+NHS Hospital,Optegra Eye Hospital North London,51.59215164,-0.254289329
+NHS Hospital,Woodside Hospital Site,53.77084351,-1.801452756
+NHS Hospital,All Hallows Hospital (Station Road),52.4667244,1.44673264
+NHS Hospital,"Spencer Private Hospitals, Margate",51.37719727,1.390478611
+NHS Hospital,Ulverston Community Hospital,54.19888687,-3.097817898
+NHS Hospital,Cedar House Hospital,51.20186996,1.176016331
+NHS Hospital,Hartington Unit,53.23583603,-1.3960042
+NHS Hospital,Chime Audiology - Sidmouth Hospital,50.68161392,-3.239641666
+NHS Hospital,Airedale Centre for Mental Health,53.89801788,-1.962679625
+NHS Hospital,Scarborough Hospital,54.28170776,-0.43473798
+NHS Hospital,Wellington Hospital,51.53155136,-0.171457693
+NHS Hospital,Broadoak Unit,53.41078949,-2.895334244
+NHS Hospital,Windsor House,53.39556885,-2.969381332
+NHS Hospital,Mossley Hill Hospital,53.38040924,-2.925530195
+NHS Hospital,Rathbone Hospital,53.40756989,-2.915574789
+NHS Hospital,Teddington Memorial Hospital,51.42583847,-0.34098497
+NHS Hospital,East Riding Community Hospital,53.85277557,-0.413159162
+NHS Hospital,Aire Court ,53.74658966,-1.53905952
+NHS Hospital,Forward House,52.51944351,-1.855177522
+NHS Hospital,Parklands Hospital,51.28273773,-1.112343669
+NHS Hospital,Fordingbridge Hospital,50.92808151,-1.793190479
+NHS Hospital,"St Charles Hospital, Mental Health Unit",51.52236176,-0.217203587
+NHS Hospital,Potters Bar Community Hospital,51.68718338,-0.177504808
+NHS Hospital,Cirencester Hospital,51.71238708,-1.975448966
+NHS Hospital,Vale Community Hospital,51.68804932,-2.353351831
+NHS Hospital,Tewkesbury Community Hospital,51.99214935,-2.152463675
+NHS Hospital,Dilke Memorial Hospital,51.81121063,-2.519848824
+NHS Hospital,Lydney & District Hospital,51.72731781,-2.536882162
+NHS Hospital,Fairford Hospital,51.70811462,-1.778166652
+NHS Hospital,Stroud General Hospital,51.74302673,-2.208121777
+NHS Hospital,Bensham Hospital,54.94495773,-1.614957929
+NHS Hospital,West Berkshire Community Hospital,51.40637589,-1.291764498
+NHS Hospital,The Manor Hospital,53.20175934,-1.218161106
+NHS Hospital,Shepton Mallet NHS Treatment Centre,51.18974304,-2.562704802
+NHS Hospital,Emersons Green NHS Treatment Centre,51.50328445,-2.484394789
+NHS Hospital,Peninsula NHS Treatment Centre,50.41239166,-4.11767292
+NHS Hospital,Dmc Community Dermatology Service - Swale CCG (Sheppey Community Hospital),51.41540909,0.793075562
+NHS Hospital,KIMS Hospital,51.28607178,0.556916654
+NHS Hospital,Tamarind Centre,52.47571182,-1.839067101
+NHS Hospital,Thornbury Hospital (Henderson Ward),51.61167145,-2.518879414
+NHS Hospital,Meadowfield,50.84244537,-0.411901087
+NHS Hospital,Chalkhill,50.99113846,-0.093586311
+NHS Hospital,Edith Shaw Hospital,53.1026535,-2.028098822
+NHS Hospital,Erith and District Hospital,51.47711182,0.166657731
+NHS Hospital,Humber Centre for Forensic Psychiatry,53.77197266,-0.444462657
+NHS Hospital,Penn Hospital,52.55867386,-2.159173012
+NHS Hospital,Intensive Support Service ,53.40324402,-1.467451096
+NHS Hospital,Michael Carlisle Centre,53.36141205,-1.49758935
+NHS Hospital,The Lodge,51.54837799,-0.04018094
+NHS Hospital,Child & Family Service,53.60042572,-2.255607843
+NHS Hospital,Foscote Court (Banbury) Trust,52.05334091,-1.330979109
+NHS Hospital,Jigsaw Independent Hospital,53.42431641,-2.238432407
+NHS Hospital,Olive Eden Hospital,51.60136414,-0.06148101
+NHS Hospital,Bloomfield Court Hospital,51.48412323,0.070732526
+NHS Hospital,Northampton General Hospital (Acute),52.23605347,-0.883829474
+NHS Hospital,Caludon Centre,52.42243195,-1.445534468
+NHS Hospital,The Retreat Hospital York,53.95082474,-1.063120484
+NHS Hospital,The Clatterbridge Cancer Centre (Wirral),53.33288956,-3.024122
+NHS Hospital,Spire St Anthony's Hospital,51.37992096,-0.220803648
+NHS Hospital,Doddington Hospital - Cambridgeshire and Peterborough NHS Foundation Trust,52.49989319,0.055862084
+NHS Hospital,North Cambridgeshire Hospital - Cambridgeshire and Peterborough NHS Foundation Trust,52.66493607,0.163927913
+NHS Hospital,Princess of Wales Hospital - Cambridgeshire and Peterborough NHS Foundation Trust,52.4131279,0.275479525
+NHS Hospital,St Margaret's Hospital,51.70429611,0.123944759
+NHS Hospital,Stafford General Infirmary,52.81060791,-2.120675087
+NHS Hospital,North Lincs Adult Mental Health Service - Access Team  including Crisis Resolution Service,53.56698608,-0.638559699
+NHS Hospital,Doncaster Adult Mental Health Service - Access Team including Crisis Resolution Service,53.49481583,-1.145960689
+NHS Hospital,Wotton Lawn Hospital,51.86696625,-2.227879047
+NHS Hospital,Berkeley House,51.74640274,-2.247665167
+NHS Hospital,Charlton Lane Hospital,51.88105392,-2.073666811
+NHS Hospital,Honeybourne,51.90705872,-2.082939863
+NHS Hospital,Oak House,52.05361176,-2.723156214
+NHS Hospital,Dudley Urgent Care Centre,52.50294876,-2.118503094
+NHS Hospital,"Airey Close, Lowestoft",52.49748993,1.718628645
+NHS Hospital,"Walker Close, Ipswich",52.05271912,1.196875691
+NHS Hospital,"1b St Catherines Way, Gorleston",52.57298279,1.716900468
+NHS Hospital,Cygnet Hospital Taunton,50.98910904,-3.077581644
+NHS Hospital,St Oswalds Hospital - DHU Health Care,53.01286316,-1.737574458
+NHS Hospital,Langdon Hospital,50.59967422,-3.468164444
+NHS Hospital,Pds Medical - Pall Mall Hospital,53.41016388,-2.993783712
+NHS Hospital,Pds Medical - Pall Mall Hospital,53.45717621,-2.638371706
+NHS Hospital,Mount Edgcumbe Hospice,50.32857513,-4.772080898
+NHS Hospital,St Julia's Hospice,50.18145752,-5.423200607
+NHS Hospital,Park Lodge,53.41864777,-2.082670927
+NHS Hospital,Park Villa,53.25304794,-2.134898901
+NHS Hospital,Rhodes Farm,51.61768723,-0.222455218
+NHS Hospital,The Harbour,53.79953384,-2.987885952
+NHS Hospital,Beverley House,52.47527695,-1.960809231
+NHS Hospital,Springview ,53.33288956,-3.024122
+NHS Hospital,St Leonard's,51.53392029,-0.077771641
+NHS Hospital,East Surrey Hospital,51.2191925,-0.161995023
+NHS Hospital,One Ashford Hospital,51.14266205,0.911750019
+NHS Hospital,Cygnet Hospital Bury,53.58713913,-2.316722631
+NHS Hospital,Cygnet Hospital Sheffield,53.36828613,-1.459696174
+NHS Hospital,Cygnet Hospital Woking,51.31477737,-0.61519134
+NHS Hospital,Bootham Park Hospital,53.9680748,-1.085584641
+NHS Hospital,SpaMedica Eye Hospital Wakefield,53.682827,-1.548219204
+NHS Hospital,Mya St Lukes Hospital,51.52371216,-0.139683187
+NHS Hospital,London Welbeck Hospital,51.51823807,-0.149448082
+NHS Hospital,Mundesley Hospital - Gimingham,52.87729645,1.413495302
+NHS Hospital,Benjamin Court Hospital,52.92454529,1.30082655
+NHS Hospital,Arbour Lodge Independent Hospital,53.38997269,-2.072225094
+NHS Hospital,Billingham Grange Independent Hospital,54.61868286,-1.291753888
+NHS Hospital,Forest Independent Hospital,53.1361084,-1.168948889
+NHS Hospital,South View - Hazeldene Independent Hospital,54.59230423,-1.292985201
+NHS Hospital,Windermere House Independent Hospital,53.74993896,-0.308325261
+NHS Hospital,Jasmine Court Independent Hospital,51.69111252,0.019816931
+NHS Hospital,Castle Lodge Independent Hospital,53.78862,-0.307072937
+NHS Hospital,"Rye, Winchelsea & District Memorial Hospital",50.9618988,0.731182933
+NHS Hospital,Livingstone Community Hospital - Virgin Care Adult Community Services,51.44222641,0.226812378
+NHS Hospital,"Peddars Centre, Hellesdon Hospital",52.65953064,1.250886321
+NHS Hospital,"Foxhall House, Ipswich",52.0506134,1.192611337
+NHS Hospital,Spire Nottingham Hospital,52.91842651,-1.086676002
+NHS Hospital,Ancora House,53.21154785,-2.898810625
+NHS Hospital,Exeter Community Hospital,50.73098373,-3.484140635
+NHS Hospital,West Valley Hospital,51.38014221,-0.10036391
+NHS Hospital,Goole & District Hospital,53.71546555,-0.874916792
+NHS Hospital,Thurrock Community Hospital,51.49637604,0.336211026
+NHS Hospital,St Lukes Hospice (Harrow),51.58670425,-0.30027172
+NHS Hospital,The Royal Buckinghamshire Hospital Ltd,51.82072449,-0.815903425
+NHS Hospital,Tees Valley Hospital,54.5464325,-1.250988483
+NHS Hospital,Farnham Hospital & Centre For Health,51.22049332,-0.784627557
+NHS Hospital,Manchester Private Hospital,53.47900391,-2.278548241
+NHS Hospital,The Wilmslow Hospital,53.32465744,-2.234813213
+NHS Hospital,InHealth - BMI Sandringham Hospital,52.75782013,0.447176158
+NHS Hospital,One Hatfield Hospital,51.77072144,-0.236349955
+NHS Hospital,SpaMedica Eye Hospital Bolton,53.57993317,-2.425807714
+NHS Hospital,Royal London Hospital,51.51901627,-0.058118623
+NHS Hospital,Weymouth Street Hospital,51.5202179,-0.150679529
+NHS Hospital,West Midlands Rehabilitation Centre,52.43637466,-1.938838005
+NHS Hospital,Aspen Healthcare - Claremont Hospital,53.23394394,-1.439604998
+NHS Hospital,Glenside Hospital,51.10705185,-1.875867605
+NHS Hospital,Eccleston Health Centre,53.64725494,-2.728149891
+NHS Hospital,Kinvara Private Hospital,53.42804337,-1.346215487
+NHS Hospital,Cygnet Hospital Maidstone,,
+NHS Hospital,All Saints Hospital,53.52851868,-2.127417088
+NHS Hospital,Cygnet Cedar Vale,52.98645782,-0.964079797
+NHS Hospital,Cygnet Wast Hills,52.38463974,-1.944918394
+NHS Hospital,Hollyhurst,54.5306282,-1.568474174
+NHS Hospital,Blackwell House,54.48135376,-1.507997751
+NHS Hospital,The New Foscote Hospital (Foscote Hospital),52.05334091,-1.330979109
+NHS Hospital,The New Foscote Hospital (Ginsburg Yard),51.55677032,-0.177716881
+NHS Hospital,Lutterworth Hospital,52.45785522,-1.197785735
+NHS Hospital,Stoneygate Eye Hospital,52.61320496,-1.10255444
+NHS Hospital,Royal National ENT and Eastman Dental Hospitals,51.52168274,-0.133553207
+NHS Hospital,Circle Rehabilitation Birmingham,52.45180511,-1.912256718
+NHS Hospital,St Jude's Women's Hospital (HQ),52.56480026,-2.147127628
+NHS Hospital,Aset Hospital,53.42542648,-2.779597521
+NHS Hospital,Carleton Clinic,54.87493134,-2.883722067
+NHS Hospital,No9 Harley St Phoenix Hospital Group,51.51700211,-0.146413714
+NHS Hospital,No25 Harley St Phoenix Hospital Group,51.51700211,-0.146413714
+NHS Hospital,Phoenix Hospital Chelmsford,51.70777512,0.50237757
+NHS Hospital,Cygnet Hospital Exeter,50.72465515,-3.486788511
+NHS Hospital,Mill Lodge Hospital,52.8362236,-1.275923371
+NHS Hospital,Stourside Hospital,52.45992661,-2.152428627
+NHS Hospital,Nightingale Hospital Exeter,50.72465515,-3.46455884
+NHS Hospital,Harley Street Specialist Hospital,51.51337433,-0.083017878
+NHS Hospital,Harley Street Specialist Hospital (Queen Anne Street),51.51819992,-0.147028148

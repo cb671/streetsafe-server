@@ -17,7 +17,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon -L index.js",
-    "setup-db": "node ./database/setup.js"
+    "setup-db": "node ./database/setup.js",
+    "import": "node database/import_emergserv_data.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
