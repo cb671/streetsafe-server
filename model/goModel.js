@@ -2,7 +2,7 @@ class Go{
   static async calculateRoutes([fromLon, fromLat], [toLon, toLat]){
     if(!process.env.VALHALLA_URL) throw new Error("Please set VALHALLA_URL variable. If using docker-compose.yml, this will be set for you.");
 
-    const routes = await Promise.all([0, 100, 200].map(crime_factor => {
+    const routes = await Promise.all([0, 75, 200].map(crime_factor => {
       const body = {
         "costing": "safe",
         "costing_options": {
