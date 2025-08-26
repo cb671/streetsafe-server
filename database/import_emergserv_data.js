@@ -42,7 +42,7 @@ async function importCSV(filePath) {
         }
 
         // H3 resolution
-        const resolution = 9;
+        const resolution = 13;
         const h3IndexStr = h3.geoToH3(lat, lng, resolution);
         const h3IndexBigInt = BigInt('0x' + h3IndexStr);
 
@@ -70,5 +70,5 @@ async function importCSV(filePath) {
 }
 
 // Run the scripts for both CSVs
-//importCSV('./data/police_stations_converted.csv');
-//importCSV('./data/hospitals.csv');
+importCSV('./data/police_stations_converted.csv');
+importCSV('./data/hospitals.csv');
