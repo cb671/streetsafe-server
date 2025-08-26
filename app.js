@@ -9,9 +9,9 @@ const app = express();
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if(!origin) return callback(true);
-    if(origin.endsWith(":localhost")) return callback(true);
-    return callback(['https://streetsafe.space'].includes(origin))
+    if(!origin) return callback(false, true);
+    if(origin.endsWith(":localhost")) return callback(false, true);
+    return callback(false, ['https://streetsafe.space'].includes(origin))
   },
   credentials: true,
   optionsSuccessStatus: 200
