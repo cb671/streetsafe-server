@@ -1,6 +1,7 @@
 const EducationalResources = require("../model/educationalModel");
 const User = require("../model/userModel");
 
+
 class EducationalController {
   static async getResources(req, res) {
     try {
@@ -9,7 +10,9 @@ class EducationalController {
       let userLocation = null;
       let topCrimes = null;
 
-      if (req.userId) {
+      const wantsPersonalised = req.query.personalised !== 'false';
+
+      if (req.userId && wantsPersonalised) {
         try {
           const user = await User.findById(req.userId);
           
@@ -17,10 +20,8 @@ class EducationalController {
             resources = await EducationalResources.getTailoredResources(user.h3);
             isPersonalised = true;
             
-            
             const Crime = require("../model/mapModel");
             userLocation = await Crime.getLocationNameFromH3(user.h3);
-            
             
             if (resources.length > 0 && resources[0].top_local_crimes) {
               topCrimes = resources[0].top_local_crimes;
@@ -53,6 +54,7 @@ class EducationalController {
       });
     }
   }
+
 
   
   static async getResourcesByCrimeType(req, res) {

@@ -1,4 +1,8 @@
 const Crime = require("../model/mapModel");
+const EmergencyServices = require("../model/emergServicesModel");
+
+
+
 class MapController {
   static mapFeatureCache = new Map();
   static async getMapFeatures(req, res) {
@@ -51,6 +55,7 @@ class MapController {
 
       const rawCrimeData = await Crime.getCrimeDataBySpecificH3(h3Index, parsedStart, parsedEnd);
 
+
       if (!rawCrimeData) {
         return res.status(404).json({
           error: "Not found",
@@ -58,9 +63,13 @@ class MapController {
         });
       }
 
-
       const formattedData = await Crime.formatCrimeDataWithLocation([rawCrimeData]);
-      res.json(formattedData[0]);
+      const closestServices = await EmergencyServices.findClosestService(h3Index);
+      const response = {
+        ...formattedData[0],
+        emergencyServices: closestServices
+      };
+      res.json(response);
     } catch (error) {
       console.error("Error fetching specific hexagon data:", error);
       res.status(500).json({
