@@ -257,7 +257,6 @@ class GraphsModel {
         }
       }
       
-     
       let dateGroup;
       switch (groupBy) {
         case 'year':
@@ -270,9 +269,6 @@ class GraphsModel {
       const query = `
         SELECT
           ${dateGroup} as period,
-          COALESCE(SUM(burglary + personal_theft + weapon_crime + bicycle_theft + 
-              damage + robbery + shoplifting + violent + anti_social + 
-              drugs + vehicle_crime), 0) AS total_crimes,
           COALESCE(SUM(burglary), 0) AS burglary,
           COALESCE(SUM(personal_theft), 0) AS personal_theft,
           COALESCE(SUM(weapon_crime), 0) AS weapon_crime,
@@ -298,20 +294,38 @@ class GraphsModel {
       
       return rows.map(row => {
         const filteredRow = this.filterCrimeTypes(row, crimeTypes);
-        return {
+        
+        
+        const processedRow = {
           period: row.period,
-          total_crimes: parseInt(filteredRow.burglary || 0) + 
-                       parseInt(filteredRow.personal_theft || 0) + 
-                       parseInt(filteredRow.weapon_crime || 0) + 
-                       parseInt(filteredRow.bicycle_theft || 0) + 
-                       parseInt(filteredRow.damage || 0) + 
-                       parseInt(filteredRow.robbery || 0) + 
-                       parseInt(filteredRow.shoplifting || 0) + 
-                       parseInt(filteredRow.violent || 0) + 
-                       parseInt(filteredRow.anti_social || 0) + 
-                       parseInt(filteredRow.drugs || 0) + 
-                       parseInt(filteredRow.vehicle_crime || 0),
-          ...filteredRow
+          burglary: parseInt(filteredRow.burglary) || 0,
+          personal_theft: parseInt(filteredRow.personal_theft) || 0,
+          weapon_crime: parseInt(filteredRow.weapon_crime) || 0,
+          bicycle_theft: parseInt(filteredRow.bicycle_theft) || 0,
+          damage: parseInt(filteredRow.damage) || 0,
+          robbery: parseInt(filteredRow.robbery) || 0,
+          shoplifting: parseInt(filteredRow.shoplifting) || 0,
+          violent: parseInt(filteredRow.violent) || 0,
+          anti_social: parseInt(filteredRow.anti_social) || 0,
+          drugs: parseInt(filteredRow.drugs) || 0,
+          vehicle_crime: parseInt(filteredRow.vehicle_crime) || 0
+        };
+        
+        const totalCrimes = processedRow.burglary + 
+                           processedRow.personal_theft + 
+                           processedRow.weapon_crime + 
+                           processedRow.bicycle_theft + 
+                           processedRow.damage + 
+                           processedRow.robbery + 
+                           processedRow.shoplifting + 
+                           processedRow.violent + 
+                           processedRow.anti_social + 
+                           processedRow.drugs + 
+                           processedRow.vehicle_crime;
+      
+        return {
+          ...processedRow,
+          total_crimes: totalCrimes
         };
       });
       
