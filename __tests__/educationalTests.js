@@ -32,7 +32,7 @@ describe('Educational Model and Controller', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    req = { userId: null, body: {}, params: {} };
+    req = { userId: null, body: {}, params: {}, query: {} };
     res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
