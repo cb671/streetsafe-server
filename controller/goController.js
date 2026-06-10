@@ -1,5 +1,6 @@
 const go = require("../model/goModel");
 const crypto = require("crypto");
+const { getCookieOptions } = require("../config/security");
 
 class GoController{
   static async calculate(req, res){
@@ -48,12 +49,7 @@ class GoController{
   static async search(req, res){
     if(!req.cookies.st) {
       const st = crypto.createHash("sha256").update(Math.random().toString()).digest().toString("hex").slice(0, 36);
-      res.cookie("st", st, {
-        maxAge: 1000 * 60 * 60 * 24 * 365,
-        httpOnly: true,
-        secure: req.secure,
-        sameSite: "lax"
-      });
+      res.cookie("st", st, getCookieOptions(req, 1000 * 60 * 60 * 24 * 365));
       req.cookies.st = st;
     }
 

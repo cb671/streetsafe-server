@@ -98,7 +98,7 @@ describe('User Model and Auth Controller', () => {
         const result = await User.findByEmail('john@example.com');
 
         expect(db.query).toHaveBeenCalledWith(
-          'SELECT * FROM users WHERE email = $1',
+          'SELECT *, h3::h3index FROM users WHERE email = $1',
           ['john@example.com']
         );
         expect(result).toEqual(mockUser);
@@ -128,7 +128,7 @@ describe('User Model and Auth Controller', () => {
         const result = await User.findById(1);
 
         expect(db.query).toHaveBeenCalledWith(
-          'SELECT id, name, email, h3, created_at FROM users WHERE id = $1',
+          'SELECT id, name, email, h3::h3index, created_at FROM users WHERE id = $1',
           [1]
         );
         expect(result).toEqual(mockUser);
@@ -415,7 +415,7 @@ describe('User Model and Auth Controller', () => {
       it('should logout user successfully', async () => {
         await AuthController.logout(req, res);
 
-        expect(res.clearCookie).toHaveBeenCalledWith('auth_token');
+        expect(res.clearCookie).toHaveBeenCalledWith('auth_token', expect.any(Object));
         expect(res.json).toHaveBeenCalledWith({ message: "Logout successful" });
       });
     });

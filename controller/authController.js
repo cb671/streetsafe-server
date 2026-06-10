@@ -1,5 +1,6 @@
 const User = require("../model/userModel");
 const jwt = require("jsonwebtoken");
+const { getCookieOptions } = require("../config/security");
 
 class AuthController {
   static async register(req, res) {
@@ -41,12 +42,11 @@ class AuthController {
       );
 
       
-      res.cookie('auth_token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000 
-      });
+      res.cookie(
+        'auth_token',
+        token,
+        getCookieOptions(req, 7 * 24 * 60 * 60 * 1000)
+      );
 
       res.status(201).json({
         message: "User registered successfully",
@@ -101,12 +101,11 @@ class AuthController {
       );
 
       
-      res.cookie('auth_token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 7 * 24 * 60 * 60 * 1000 
-      });
+      res.cookie(
+        'auth_token',
+        token,
+        getCookieOptions(req, 7 * 24 * 60 * 60 * 1000)
+      );
 
       res.json({
         message: "Login successful",
@@ -128,7 +127,7 @@ class AuthController {
   }
 
   static async logout(req, res) {
-    res.clearCookie('auth_token');
+    res.clearCookie('auth_token', getCookieOptions(req));
     res.json({ message: "Logout successful" });
   }
 
