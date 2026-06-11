@@ -114,8 +114,10 @@ GET /api/graphs/crime-types # Supported crime categories
 
 ### Map Data (`/api/map`)
 ```http
-GET /api/map/features              # All crime data for map hexagons
+GET /api/map                       # All crime data for map hexagons
+GET /api/map/features              # Legacy alias for all crime data
 GET /api/map/hex/:h3Index          # Specific hexagon data with emergency services
+GET /api/map/hexagon/:h3Index      # Supported alias for specific hexagon data
 ```
 
 ### Educational Resources (`/api/educational`)
@@ -147,6 +149,5 @@ JWT_EXPIRES_IN=24h
 PORT=3000
 NODE_ENV=development
 ```
-
 
 

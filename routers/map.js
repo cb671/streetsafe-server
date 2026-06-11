@@ -4,6 +4,8 @@ const mapController = require('../controller/mapController');
 
 
 router.get('/', mapController.getMapFeatures);
+router.get('/features', mapController.getMapFeatures);
+router.get('/hex/:h3Index', mapController.getSpecificHexagonData);
 router.get('/hexagon/:h3Index', mapController.getSpecificHexagonData);
 
 module.exports = router;
