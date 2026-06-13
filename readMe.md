@@ -17,7 +17,7 @@ StreetSafe Server is a Node.js backend API for crime data analysis, educational 
 - **Authentication**: JSON Web Tokens (JWT)
 - **Testing**: Jest with comprehensive unit tests (80%+ coverage)
 - **Geolocation**: H3 hexagonal indexing, Nominatim geocoding
-- **Data Processing**: CSV import tools for emergency services data
+- **Data Processing**: CSV import tools for emergency services and Police.uk crime data
 
 ## Database Schema
 
@@ -59,7 +59,14 @@ npm run setup-db
 
 # Import emergency services data from CSV files
 npm run import
+
+# Import downloaded Police.uk monthly crime folders
+# PowerShell example:
+npm run import:crime -- "..\\police-data"
 ```
+
+The crime importer scans the folder recursively and only loads `*-street.csv` files from the Police.uk download.
+It aggregates point crimes into H3 cells and upserts them into the `crime_areas` table used by the live API.
 
 ### Running the Server
 
@@ -141,6 +148,10 @@ GET /api/emerg-services/closest    # Find nearest emergency services
 # Database
 DB_URL=postgresql://user:password@localhost:5432/streetsafe
 
+# Optional crime import settings
+POLICE_DATA_DIR=..\\police-data
+CRIME_H3_RESOLUTION=9
+
 # Authentication
 JWT_SECRET=your-secret-key-here
 JWT_EXPIRES_IN=24h
@@ -149,5 +160,4 @@ JWT_EXPIRES_IN=24h
 PORT=3000
 NODE_ENV=development
 ```
-
 

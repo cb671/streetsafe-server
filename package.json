@@ -21,6 +21,7 @@
     "dev": "nodemon -L index.js",
     "setup-db": "node ./database/setup.js",
     "import": "node database/import_emergserv_data.js",
+    "import:crime": "node database/import_crime_data.js",
     "start": "node ."
   },
   "dependencies": {
