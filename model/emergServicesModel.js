@@ -3,15 +3,29 @@ const h3 = require("h3-js");
 
 class EmergencyServices {
   static async findClosestService(h3Index) {
+    if (!h3Index) {
+      return { police: null, hospital: null };
+    }
+
     const resolution = 9; // normalize everything
     const inputNorm = h3.h3ToParent(h3Index, resolution);
 
-    // pull all police + hospitals, already as H3 index strings
-    const { rows } = await db.query(`
-      SELECT name, type, h3::h3index AS h3
-      FROM emergency_services
-      WHERE type IN ('police', 'NHS Hospital')
-    `);
+    let rows = [];
+    try {
+      // pull all police + hospitals, already as H3 index strings
+      const result = await db.query(`
+        SELECT name, type, h3::h3index AS h3
+        FROM emergency_services
+        WHERE type IN ('police', 'NHS Hospital')
+      `);
+      rows = result.rows;
+    } catch (error) {
+      if (error.code === "42P01") {
+        console.warn("emergency_services table is missing; returning null emergency services");
+        return { police: null, hospital: null };
+      }
+      throw error;
+    }
 
     let closest = {
       police: null,
