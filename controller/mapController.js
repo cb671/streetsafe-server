@@ -7,7 +7,7 @@ class MapController {
   static mapFeatureCache = new Map();
   static async getMapFeatures(req, res) {
     try {
-      const startDate = req.query.startDate || '2025-01-01';
+      const startDate = req.query.startDate || '2020-01-01';
       const endDate = req.query.endDate || Date.now();
 
       const parsedStart = new Date(startDate);
@@ -37,7 +37,7 @@ class MapController {
   static async getSpecificHexagonData(req, res) {
     try {
       const { h3Index } = req.params;
-      const startDate = req.query.startDate || '2025-01-01';
+      const startDate = req.query.startDate || '2020-01-01';
       const endDate = req.query.endDate || Date.now();
 
       if (!h3Index) {
@@ -80,6 +80,5 @@ class MapController {
   }
 }
 module.exports = MapController;
-
 
 

@@ -1,0 +1,30 @@
+services:
+  app:
+    build:
+      context: .
+    depends_on:
+      - valhalla
+    env_file:
+      - .env
+    environment:
+      VALHALLA_URL: http://valhalla:8002
+      NODE_ENV: production
+    ports:
+      - "${PORT:-3000}:3000"
+    restart: unless-stopped
+
+  valhalla:
+    image: ghcr.io/valhalla/valhalla-scripted:latest
+    environment:
+      tile_urls: "${VALHALLA_TILE_URL:-}"
+      server_threads: "${VALHALLA_THREADS:-2}"
+      build_admins: "True"
+      build_time_zones: "True"
+      build_elevation: "False"
+      serve_tiles: "True"
+      use_tiles_ignore_pbf: "True"
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./valhalla-data:/custom_files
+    restart: unless-stopped

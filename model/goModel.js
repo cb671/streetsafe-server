@@ -2,29 +2,46 @@ class Go{
   static async calculateRoutes([fromLon, fromLat], [toLon, toLat]){
     if(!process.env.VALHALLA_URL) throw new Error("Please set VALHALLA_URL variable. If using docker-compose.yml, this will be set for you.");
 
-    const routes = await Promise.all([0, 75, 200].map(crime_factor => {
+    const routeModes = [
+      {
+        mode: "direct",
+        pedestrianOptions: {
+          shortest: true,
+          use_hills: 0.5,
+          walking_speed: 5.1
+        }
+      },
+      {
+        mode: "informed",
+        pedestrianOptions: {
+          shortest: false,
+          use_hills: 0.4,
+          walking_speed: 5.1
+        }
+      },
+      {
+        mode: "cautious",
+        pedestrianOptions: {
+          shortest: false,
+          use_hills: 0.2,
+          walking_speed: 4.5
+        }
+      }
+    ];
+
+    const routes = await Promise.all(routeModes.map(({ mode, pedestrianOptions }) => {
       const body = {
-        "costing": "safe",
+        "costing": "pedestrian",
         "costing_options": {
-          "safe": {
+          "pedestrian": {
             "use_ferry": 0,
-            "use_living_streets": 1,
-            "use_tracks": 0,
-            "service_penalty": 15,
-            "service_factor": 1,
-            "shortest": false,
-            "use_hills": 0.5,
-            "walking_speed": 5.1,
-            "walkway_factor": 1,
-            "sidewalk_factor": 1,
-            "alley_factor": 2,
-            "driveway_factor": 5,
+            "shortest": pedestrianOptions.shortest,
+            "use_hills": pedestrianOptions.use_hills,
+            "walking_speed": pedestrianOptions.walking_speed,
             "step_penalty": 0,
             "max_hiking_difficulty": 1,
-            "use_lit": 0.15,
             "transit_start_end_max_distance": 2145,
-            "transit_transfer_max_distance": 800,
-            "crime_factor": crime_factor
+            "transit_transfer_max_distance": 800
           }
         },
         "exclude_polygons": [],
@@ -41,7 +58,7 @@ class Go{
       return fetch(`${process.env.VALHALLA_URL}/route?json=${encodeURIComponent(JSON.stringify(body))}`)
         .then(r=>r.json()).then(r=>({
         ...r,
-        crime_factor
+        mode
       }));
     }));
 

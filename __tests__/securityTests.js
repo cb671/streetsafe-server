@@ -6,7 +6,7 @@ describe('security config', () => {
     jest.resetModules();
   });
 
-  it('uses configured frontend origins when FRONTEND_URLS is set', () => {
+  it('keeps default frontend origins when FRONTEND_URLS is set', () => {
     process.env = {
       ...originalEnv,
       FRONTEND_URLS: 'https://streetsafe-client.onrender.com, https://example.com'
@@ -14,10 +14,13 @@ describe('security config', () => {
 
     const { allowedOrigins } = require('../config/security');
 
-    expect(allowedOrigins).toEqual([
-      'https://streetsafe-client.onrender.com',
-      'https://example.com'
-    ]);
+    expect(allowedOrigins).toEqual(
+      expect.arrayContaining([
+        'https://streetsafe-client.onrender.com',
+        'https://example.com'
+      ])
+    );
+    expect(allowedOrigins).toHaveLength(2);
   });
 
   it('normalizes configured frontend origins with trailing slashes', () => {
@@ -28,10 +31,13 @@ describe('security config', () => {
 
     const { allowedOrigins } = require('../config/security');
 
-    expect(allowedOrigins).toEqual([
-      'https://streetsafe-client.onrender.com',
-      'https://example.com'
-    ]);
+    expect(allowedOrigins).toEqual(
+      expect.arrayContaining([
+        'https://streetsafe-client.onrender.com',
+        'https://example.com'
+      ])
+    );
+    expect(allowedOrigins).toHaveLength(2);
   });
 
   it('returns cross-site cookie settings in production', () => {

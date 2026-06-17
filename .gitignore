@@ -4,3 +4,8 @@
 coverage
 node_modules/
 .vscode
+valhalla-data/*.osm.pbf
+valhalla-data/*.tar
+valhalla-data/valhalla_tiles/
+valhalla-data/admins.sqlite
+valhalla-data/timezones.sqlite

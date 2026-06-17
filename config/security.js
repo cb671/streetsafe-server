@@ -1,5 +1,4 @@
 const DEFAULT_ALLOWED_ORIGINS = [
-  "https://streetsafe.space",
   "https://streetsafe-client.onrender.com"
 ];
 
@@ -14,7 +13,7 @@ const parseAllowedOrigins = () => {
         .map(normalizeOrigin)
     : [];
 
-  return configuredOrigins.length > 0 ? configuredOrigins : DEFAULT_ALLOWED_ORIGINS;
+  return [...new Set([...DEFAULT_ALLOWED_ORIGINS, ...configuredOrigins])];
 };
 
 const allowedOrigins = parseAllowedOrigins();
