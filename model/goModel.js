@@ -1,3 +1,49 @@
+const { createHttpError } = require("../utils/httpError");
+
+const readJsonResponse = async (response, upstream) => {
+  const raw = await response.text();
+  let data = null;
+
+  if(raw){
+    try{
+      data = JSON.parse(raw);
+    }catch{
+      throw createHttpError(502, `${upstream} returned invalid JSON`, {
+        details: {
+          upstream,
+          status: response.status
+        }
+      });
+    }
+  }
+
+  if(!response.ok){
+    throw createHttpError(502, `${upstream} request failed`, {
+      details: {
+        upstream,
+        status: response.status,
+        body: data
+      }
+    });
+  }
+
+  return data;
+};
+
+const fetchJson = async (url, options, upstream) => {
+  try{
+    const response = await fetch(url, options);
+    return readJsonResponse(response, upstream);
+  }catch(error){
+    if(error.statusCode) throw error;
+    throw createHttpError(502, `${upstream} is unavailable`, {
+      details: {
+        upstream
+      }
+    });
+  }
+};
+
 class Go{
   static async calculateRoutes([fromLon, fromLat], [toLon, toLat]){
     if(!process.env.VALHALLA_URL) throw new Error("Please set VALHALLA_URL variable. If using docker-compose.yml, this will be set for you.");
@@ -55,8 +101,11 @@ class Go{
         "format": "osrm"
       };
 
-      return fetch(`${process.env.VALHALLA_URL}/route?json=${encodeURIComponent(JSON.stringify(body))}`)
-        .then(r=>r.json()).then(r=>({
+      return fetchJson(
+        `${process.env.VALHALLA_URL}/route?json=${encodeURIComponent(JSON.stringify(body))}`,
+        undefined,
+        "Valhalla"
+      ).then(r=>({
         ...r,
         mode
       }));
@@ -66,17 +115,22 @@ class Go{
   }
 
   static reverseGeo(lon, lat){
-    return fetch(
+    return fetchJson(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14&addressdetails=1`,
       {
         headers: {
           'User-Agent': 'StreetSafe-App/1.0'
         }
-      }
-    ).then(r=>r.json());
+      },
+      "Nominatim"
+    );
   }
 
   static search(query, sessionToken, bias){
+    if(!process.env.MAPS_API_KEY){
+      throw createHttpError(500, "MAPS_API_KEY is not configured");
+    }
+
     const body = {
       input: query,
       sessionToken,
@@ -93,7 +147,7 @@ class Go{
         }
       }
     }
-    return fetch(
+    return fetchJson(
       `https://places.googleapis.com/v1/places:autocomplete`,
       {
         headers: {
@@ -103,12 +157,17 @@ class Go{
         },
         method: "POST",
         body: JSON.stringify(body)
-      }
-    ).then(r=>r.json());
+      },
+      "Google Places"
+    );
   }
 
   static geocode(placeId){
-    return fetch(
+    if(!process.env.MAPS_API_KEY){
+      throw createHttpError(500, "MAPS_API_KEY is not configured");
+    }
+
+    return fetchJson(
       `https://geocode.googleapis.com/v4beta/geocode/places/${placeId}`,
       {
         headers: {
@@ -116,7 +175,9 @@ class Go{
           'X-Goog-Api-Key': process.env.MAPS_API_KEY,
         },
       }
-    ).then(r=>r.json());
+      ,
+      "Google Geocoding"
+    );
   }
 }
 

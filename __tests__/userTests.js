@@ -20,9 +20,19 @@ const AuthController = require('../controller/authController');
 const db = require('../database/connect');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const errorHandler = require('../middleware/errorHandler');
 
 describe('User Model and Auth Controller', () => {
   let req, res;
+  const next = jest.fn();
+
+  const invokeController = async (handler) => {
+    try {
+      await handler();
+    } catch (error) {
+      errorHandler(error, req, res, next);
+    }
+  };
 
   beforeAll(() => {
     jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -246,7 +256,7 @@ describe('User Model and Auth Controller', () => {
         User.create = jest.fn().mockResolvedValue(mockUser);
         jwt.sign.mockReturnValue('mockToken');
 
-        await AuthController.register(req, res);
+        await invokeController(() => AuthController.register(req, res));
 
         expect(User.findByEmail).toHaveBeenCalledWith('john@example.com');
         expect(User.postcodeToH3).toHaveBeenCalledWith('SW1A 1AA');
@@ -262,11 +272,12 @@ describe('User Model and Auth Controller', () => {
       it('should return error for missing fields', async () => {
         req.body = { name: 'John Doe' };
 
-        await AuthController.register(req, res);
+        await invokeController(() => AuthController.register(req, res));
 
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
-          error: "All fields are required"
+          error: "All fields are required",
+          message: "All fields are required"
         });
       });
 
@@ -278,11 +289,12 @@ describe('User Model and Auth Controller', () => {
           postcode: 'SW1A 1AA'
         };
 
-        await AuthController.register(req, res);
+        await invokeController(() => AuthController.register(req, res));
 
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
-          error: "Password must be at least 8 characters long"
+          error: "Password must be at least 8 characters long",
+          message: "Password must be at least 8 characters long"
         });
       });
 
@@ -296,11 +308,12 @@ describe('User Model and Auth Controller', () => {
 
         User.findByEmail = jest.fn().mockResolvedValue({ email: 'existing@example.com' });
 
-        await AuthController.register(req, res);
+        await invokeController(() => AuthController.register(req, res));
 
         expect(res.status).toHaveBeenCalledWith(409);
         expect(res.json).toHaveBeenCalledWith({
-          error: "User with this email already exists"
+          error: "User with this email already exists",
+          message: "User with this email already exists"
         });
       });
 
@@ -315,12 +328,11 @@ describe('User Model and Auth Controller', () => {
         User.findByEmail = jest.fn().mockResolvedValue(null);
         User.postcodeToH3 = jest.fn().mockRejectedValue(new Error('Invalid postcode'));
 
-        await AuthController.register(req, res);
+        await invokeController(() => AuthController.register(req, res));
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
-          error: "Internal server error",
-          message: "Invalid postcode"
+          message: "Internal server error"
         });
       });
     });
@@ -344,7 +356,7 @@ describe('User Model and Auth Controller', () => {
         User.validatePassword = jest.fn().mockResolvedValue(true);
         jwt.sign.mockReturnValue('mockToken');
 
-        await AuthController.login(req, res);
+        await invokeController(() => AuthController.login(req, res));
 
         expect(User.findByEmail).toHaveBeenCalledWith('john@example.com');
         expect(User.validatePassword).toHaveBeenCalledWith('password123', 'hashedPassword');
@@ -363,11 +375,12 @@ describe('User Model and Auth Controller', () => {
       it('should return error for missing credentials', async () => {
         req.body = { email: 'john@example.com' };
 
-        await AuthController.login(req, res);
+        await invokeController(() => AuthController.login(req, res));
 
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
-          error: "Email and password are required"
+          error: "Email and password are required",
+          message: "Email and password are required"
         });
       });
 
@@ -379,11 +392,12 @@ describe('User Model and Auth Controller', () => {
 
         User.findByEmail = jest.fn().mockResolvedValue(null);
 
-        await AuthController.login(req, res);
+        await invokeController(() => AuthController.login(req, res));
 
         expect(res.status).toHaveBeenCalledWith(401);
         expect(res.json).toHaveBeenCalledWith({
-          error: "Invalid credentials"
+          error: "Invalid credentials",
+          message: "Invalid credentials"
         });
       });
 
@@ -402,18 +416,19 @@ describe('User Model and Auth Controller', () => {
         User.findByEmail = jest.fn().mockResolvedValue(mockUser);
         User.validatePassword = jest.fn().mockResolvedValue(false);
 
-        await AuthController.login(req, res);
+        await invokeController(() => AuthController.login(req, res));
 
         expect(res.status).toHaveBeenCalledWith(401);
         expect(res.json).toHaveBeenCalledWith({
-          error: "Invalid credentials"
+          error: "Invalid credentials",
+          message: "Invalid credentials"
         });
       });
     });
 
     describe('logout', () => {
       it('should logout user successfully', async () => {
-        await AuthController.logout(req, res);
+        await invokeController(() => AuthController.logout(req, res));
 
         expect(res.clearCookie).toHaveBeenCalledWith('auth_token', expect.any(Object));
         expect(res.json).toHaveBeenCalledWith({ message: "Logout successful" });
@@ -432,7 +447,7 @@ describe('User Model and Auth Controller', () => {
 
         User.findById = jest.fn().mockResolvedValue(mockUser);
 
-        await AuthController.getProfile(req, res);
+        await invokeController(() => AuthController.getProfile(req, res));
 
         expect(User.findById).toHaveBeenCalledWith(1);
         expect(res.json).toHaveBeenCalledWith({ user: mockUser });
@@ -443,11 +458,12 @@ describe('User Model and Auth Controller', () => {
 
         User.findById = jest.fn().mockResolvedValue(null);
 
-        await AuthController.getProfile(req, res);
+        await invokeController(() => AuthController.getProfile(req, res));
 
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({
-          error: "User not found"
+          error: "User not found",
+          message: "User not found"
         });
       });
 
@@ -456,11 +472,11 @@ describe('User Model and Auth Controller', () => {
 
         User.findById = jest.fn().mockRejectedValue(new Error('Database error'));
 
-        await AuthController.getProfile(req, res);
+        await invokeController(() => AuthController.getProfile(req, res));
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
-          error: "Internal server error"
+          message: "Internal server error"
         });
       });
     });

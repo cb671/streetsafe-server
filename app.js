@@ -2,7 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const api = require("./routers/api");
+const health = require("./routers/health");
 const { allowedOrigins, normalizeOrigin } = require("./config/security");
+const errorHandler = require("./middleware/errorHandler");
 
 const cookieParser = require('cookie-parser')
 
@@ -22,6 +24,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
+app.use("/health", health);
 app.use("/api", api);
+app.use(errorHandler);
 
 module.exports = app;

@@ -1,15 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const graphsController = require('../controller/graphsController');
+const asyncHandler = require('../middleware/asyncHandler');
 
 
-router.get('/proportions', graphsController.getCrimeProportions);
-router.get('/trends', graphsController.getCrimeTrends);
-router.get('/totals', graphsController.getCrimeTotals);
+router.get('/proportions', asyncHandler(graphsController.getCrimeProportions));
+router.get('/trends', asyncHandler(graphsController.getCrimeTrends));
+router.get('/totals', asyncHandler(graphsController.getCrimeTotals));
 
 
-router.get('/locations', graphsController.getAvailableLocations);
-router.get('/date-range', graphsController.getDateRange);
-router.get('/crime-types', graphsController.getCrimeTypes);
+router.get('/locations', asyncHandler(graphsController.getAvailableLocations));
+router.get('/date-range', asyncHandler(graphsController.getDateRange));
+router.get('/dates', asyncHandler(graphsController.getDateRange));
+router.get('/crime-types', asyncHandler(graphsController.getCrimeTypes));
 
 module.exports = router;

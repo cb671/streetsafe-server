@@ -1,6 +1,35 @@
 const db = require("../database/connect");
+const { createHttpError } = require("../utils/httpError");
 
 class GraphsModel {
+  static async getLocationFilter(location, radiusKm) {
+    if (!location) {
+      console.log('No location provided, skipping location filter');
+      return '';
+    }
+
+    try {
+      const h3Index = await this.locationToH3(location);
+      console.log('Got H3 index:', h3Index);
+
+      const gridDistance = await this.kmToH3GridDistance(radiusKm, h3Index);
+      console.log('Got grid distance:', gridDistance);
+
+      const locationFilter = this.buildLocationFilter(h3Index, gridDistance);
+      console.log('Location filter created:', locationFilter);
+      return locationFilter;
+    } catch (error) {
+      console.error('Location processing failed:', error);
+      throw createHttpError(400, `Invalid location: ${location}`, {
+        error: "Bad request",
+        details: {
+          location,
+          reason: error.message
+        }
+      });
+    }
+  }
+
   // Convert natural language location to H3 index using geocoding
   static async locationToH3(locationString) {
     try {
@@ -159,25 +188,7 @@ class GraphsModel {
       const endDateValue = endDate || new Date().toISOString().split('T')[0];
       console.log('Date range:', { startDate, endDateValue });
       
-      let locationFilter = '';
-      if (location) {
-        console.log('Processing location filter...');
-        try {
-          const h3Index = await this.locationToH3(location);
-          console.log('Got H3 index:', h3Index);
-          
-          const gridDistance = await this.kmToH3GridDistance(radiusKm, h3Index);
-          console.log('Got grid distance:', gridDistance);
-          
-          locationFilter = this.buildLocationFilter(h3Index, gridDistance);
-          console.log('Location filter created:', locationFilter);
-        } catch (locationError) {
-          console.error('Location processing failed:', locationError);
-          locationFilter = '';
-        }
-      } else {
-        console.log('No location provided, skipping location filter');
-      }
+      const locationFilter = await this.getLocationFilter(location, radiusKm);
       
       const query = `
         SELECT
@@ -229,6 +240,10 @@ class GraphsModel {
       return result;
       
     } catch (error) {
+      if (error.statusCode) {
+        throw error;
+      }
+
       console.error('getCrimeTotalsByCategory error details:', {
         message: error.message,
         code: error.code,
@@ -245,17 +260,7 @@ class GraphsModel {
       
       const endDateValue = endDate || new Date().toISOString().split('T')[0];
       
-      let locationFilter = '';
-      if (location) {
-        try {
-          const h3Index = await this.locationToH3(location);
-          const gridDistance = await this.kmToH3GridDistance(radiusKm, h3Index);
-          locationFilter = this.buildLocationFilter(h3Index, gridDistance);
-        } catch (locationError) {
-          console.error('Location processing failed in trends:', locationError);
-          locationFilter = '';
-        }
-      }
+      const locationFilter = await this.getLocationFilter(location, radiusKm);
       
       let dateGroup;
       switch (groupBy) {
@@ -330,6 +335,10 @@ class GraphsModel {
       });
       
     } catch (error) {
+      if (error.statusCode) {
+        throw error;
+      }
+
       console.error('getCrimeTrends error:', error);
       throw new Error(`Database error: ${error.message}`);
     }
@@ -351,6 +360,10 @@ class GraphsModel {
       }));
       
     } catch (error) {
+      if (error.statusCode) {
+        throw error;
+      }
+
       console.error('getCrimeProportions error:', error);
       throw new Error(`Database error: ${error.message}`);
     }

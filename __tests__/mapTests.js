@@ -12,9 +12,19 @@ const Crime = require('../model/mapModel');
 const MapController = require('../controller/mapController');
 const EmergencyServices = require('../model/emergServicesModel');
 const db = require('../database/connect');
+const errorHandler = require('../middleware/errorHandler');
 
 describe('Map Model and Controller', () => {
   let req, res;
+  const next = jest.fn();
+
+  const invokeController = async (handler) => {
+    try {
+      await handler();
+    } catch (error) {
+      errorHandler(error, req, res, next);
+    }
+  };
 
   beforeAll(() => {
     jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -497,7 +507,7 @@ describe('Map Model and Controller', () => {
           ['123456789', 10, 5, 2, 3, 7, 1, 4, 8, 6, 2, 5]
         ]);
 
-        await MapController.getMapFeatures(req, res);
+        await invokeController(() => MapController.getMapFeatures(req, res));
 
         expect(getCrimeDataSpy).toHaveBeenCalled();
         expect(formatDataSpy).toHaveBeenCalledWith(mockRawData);
@@ -519,7 +529,7 @@ describe('Map Model and Controller', () => {
         const getCrimeDataSpy = jest.spyOn(Crime, 'getCrimeDataByH3').mockResolvedValue(mockRawData);
         const formatDataSpy = jest.spyOn(Crime, 'formatCrimeData').mockReturnValue([]);
 
-        await MapController.getMapFeatures(req, res);
+        await invokeController(() => MapController.getMapFeatures(req, res));
 
         expect(getCrimeDataSpy).toHaveBeenCalledWith(
           expect.any(Date),
@@ -538,14 +548,14 @@ describe('Map Model and Controller', () => {
         const getCrimeDataSpy = jest.spyOn(Crime, 'getCrimeDataByH3').mockResolvedValue([]);
         const formatDataSpy = jest.spyOn(Crime, 'formatCrimeData').mockReturnValue(cachedData);
 
-        await MapController.getMapFeatures(req, res);
+        await invokeController(() => MapController.getMapFeatures(req, res));
 
         getCrimeDataSpy.mockClear();
         formatDataSpy.mockClear();
         res.json.mockClear();
 
        
-        await MapController.getMapFeatures(req, res);
+        await invokeController(() => MapController.getMapFeatures(req, res));
 
         expect(getCrimeDataSpy).not.toHaveBeenCalled();
         expect(formatDataSpy).not.toHaveBeenCalled();
@@ -558,12 +568,11 @@ describe('Map Model and Controller', () => {
       it('should handle errors and return 500', async () => {
         const getCrimeDataSpy = jest.spyOn(Crime, 'getCrimeDataByH3').mockRejectedValue(new Error('Database error'));
 
-        await MapController.getMapFeatures(req, res);
+        await invokeController(() => MapController.getMapFeatures(req, res));
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
-          error: "Internal server error",
-          message: "Database error"
+          message: "Internal server error"
         });
 
         getCrimeDataSpy.mockRestore();
@@ -608,7 +617,7 @@ describe('Map Model and Controller', () => {
         const formatSpy = jest.spyOn(Crime, 'formatCrimeDataWithLocation').mockResolvedValue(mockFormattedData);
         EmergencyServices.findClosestService.mockResolvedValue(mockEmergencyServices);
 
-        await MapController.getSpecificHexagonData(req, res);
+        await invokeController(() => MapController.getSpecificHexagonData(req, res));
 
         expect(getCrimeSpy).toHaveBeenCalledWith('123456789', expect.any(Date), expect.any(Date));
         expect(formatSpy).toHaveBeenCalledWith([mockCrimeData]);
@@ -625,7 +634,7 @@ describe('Map Model and Controller', () => {
       it('should return 400 if h3Index is missing', async () => {
         req.params = {};
 
-        await MapController.getSpecificHexagonData(req, res);
+        await invokeController(() => MapController.getSpecificHexagonData(req, res));
 
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
@@ -639,7 +648,7 @@ describe('Map Model and Controller', () => {
 
         const getCrimeSpy = jest.spyOn(Crime, 'getCrimeDataBySpecificH3').mockResolvedValue(null);
 
-        await MapController.getSpecificHexagonData(req, res);
+        await invokeController(() => MapController.getSpecificHexagonData(req, res));
 
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({
@@ -655,7 +664,7 @@ describe('Map Model and Controller', () => {
 
         const getCrimeSpy = jest.spyOn(Crime, 'getCrimeDataBySpecificH3').mockResolvedValue(null);
 
-        await MapController.getSpecificHexagonData(req, res);
+        await invokeController(() => MapController.getSpecificHexagonData(req, res));
 
         expect(getCrimeSpy).toHaveBeenCalledWith('123456789', expect.any(Date), expect.any(Date));
 
@@ -667,12 +676,11 @@ describe('Map Model and Controller', () => {
 
         const getCrimeSpy = jest.spyOn(Crime, 'getCrimeDataBySpecificH3').mockRejectedValue(new Error('Database error'));
 
-        await MapController.getSpecificHexagonData(req, res);
+        await invokeController(() => MapController.getSpecificHexagonData(req, res));
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
-          error: "Internal server error",
-          message: "Database error"
+          message: "Internal server error"
         });
 
         getCrimeSpy.mockRestore();

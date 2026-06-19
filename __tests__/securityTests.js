@@ -71,4 +71,43 @@ describe('security config', () => {
       maxAge: 1000
     });
   });
+
+  it('uses default rate limit policies when env values are missing', () => {
+    const { rateLimitPolicies } = require('../config/rateLimit');
+
+    expect(rateLimitPolicies).toEqual({
+      auth: {
+        windowMs: 15 * 60 * 1000,
+        maxRequests: 10
+      },
+      externalApi: {
+        windowMs: 60 * 1000,
+        maxRequests: 30
+      }
+    });
+  });
+
+  it('parses configured rate limit policies from env', () => {
+    process.env = {
+      ...originalEnv,
+      AUTH_RATE_LIMIT_WINDOW_MS: '60000',
+      AUTH_RATE_LIMIT_MAX: '5',
+      EXTERNAL_RATE_LIMIT_WINDOW_MS: '30000',
+      EXTERNAL_RATE_LIMIT_MAX: '12'
+    };
+    jest.resetModules();
+
+    const { rateLimitPolicies } = require('../config/rateLimit');
+
+    expect(rateLimitPolicies).toEqual({
+      auth: {
+        windowMs: 60000,
+        maxRequests: 5
+      },
+      externalApi: {
+        windowMs: 30000,
+        maxRequests: 12
+      }
+    });
+  });
 });

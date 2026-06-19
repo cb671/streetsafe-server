@@ -7,9 +7,19 @@ global.fetch = jest.fn();
 const GraphsModel = require('../model/graphsModel');
 const GraphsController = require('../controller/graphsController');
 const db = require('../database/connect');
+const errorHandler = require('../middleware/errorHandler');
 
 describe('Graphs Model and Controller', () => {
   let req, res;
+  const next = jest.fn();
+
+  const invokeController = async (handler) => {
+    try {
+      await handler();
+    } catch (error) {
+      errorHandler(error, req, res, next);
+    }
+  };
 
   
   beforeAll(() => {
@@ -269,14 +279,16 @@ describe('Graphs Model and Controller', () => {
         expect(result).toEqual([]);
       });
 
-      it('should handle location processing errors gracefully', async () => {
+      it('should return a 400 error when location processing fails', async () => {
         const spy = jest.spyOn(GraphsModel, 'locationToH3').mockRejectedValue(new Error('Location error'));
-        
-        db.query.mockResolvedValue({ rows: [{}] });
 
-        const result = await GraphsModel.getCrimeTotalsByCategory('2023-01-01', '2023-12-31', 'InvalidLocation', 3, null);
-        expect(result).toBeInstanceOf(Array);
-        
+        await expect(
+          GraphsModel.getCrimeTotalsByCategory('2023-01-01', '2023-12-31', 'InvalidLocation', 3, null)
+        ).rejects.toMatchObject({
+          statusCode: 400,
+          message: 'Invalid location: InvalidLocation'
+        });
+
         spy.mockRestore();
       });
 
@@ -334,14 +346,16 @@ describe('Graphs Model and Controller', () => {
         );
       });
 
-      it('should handle location processing errors in trends', async () => {
+      it('should return a 400 error when trend location processing fails', async () => {
         const spy = jest.spyOn(GraphsModel, 'locationToH3').mockRejectedValue(new Error('Location error'));
-        
-        db.query.mockResolvedValue({ rows: [] });
 
-        const result = await GraphsModel.getCrimeTrends('2023-01-01', '2023-12-31', 'InvalidLocation', 3, null, 'month');
-        expect(result).toBeInstanceOf(Array);
-        
+        await expect(
+          GraphsModel.getCrimeTrends('2023-01-01', '2023-12-31', 'InvalidLocation', 3, null, 'month')
+        ).rejects.toMatchObject({
+          statusCode: 400,
+          message: 'Invalid location: InvalidLocation'
+        });
+
         spy.mockRestore();
       });
 
@@ -441,7 +455,7 @@ describe('Graphs Model and Controller', () => {
           { category: 'Burglary', count: 10 }
         ]);
 
-        await GraphsController.getCrimeTotals(req, res);
+        await invokeController(() => GraphsController.getCrimeTotals(req, res));
         
         expect(spy).toHaveBeenCalledWith('2020-01-01', undefined, undefined, 3, undefined);
         expect(res.json).toHaveBeenCalledWith([{ category: 'Burglary', count: 10 }]);
@@ -460,22 +474,57 @@ describe('Graphs Model and Controller', () => {
 
         const spy = jest.spyOn(GraphsModel, 'getCrimeTotalsByCategory').mockResolvedValue([]);
 
-        await GraphsController.getCrimeTotals(req, res);
+        await invokeController(() => GraphsController.getCrimeTotals(req, res));
         
-        expect(spy).toHaveBeenCalledWith('2023-01-01', '2023-12-31', 'London', '5', 'burglary,violent');
+        expect(spy).toHaveBeenCalledWith('2023-01-01', '2023-12-31', 'London', 5, ['burglary', 'violent']);
         
         spy.mockRestore();
+      });
+
+      it('should return 400 for an invalid date format', async () => {
+        req.query = { startDate: '01-01-2023' };
+
+        await invokeController(() => GraphsController.getCrimeTotals(req, res));
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+          error: 'Bad request',
+          message: 'startDate must be in YYYY-MM-DD format'
+        });
+      });
+
+      it('should return 400 for an invalid radius', async () => {
+        req.query = { radius: '0' };
+
+        await invokeController(() => GraphsController.getCrimeTotals(req, res));
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+          error: 'Bad request',
+          message: 'radius must be a positive number'
+        });
+      });
+
+      it('should return 400 for unsupported crime types', async () => {
+        req.query = { crimeTypes: 'burglary,fraud' };
+
+        await invokeController(() => GraphsController.getCrimeTotals(req, res));
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+          error: 'Bad request',
+          message: 'Unsupported crimeTypes: fraud'
+        });
       });
 
       it('should handle errors and return 500', async () => {
         const spy = jest.spyOn(GraphsModel, 'getCrimeTotalsByCategory').mockRejectedValue(new Error('Model error'));
 
-        await GraphsController.getCrimeTotals(req, res);
+        await invokeController(() => GraphsController.getCrimeTotals(req, res));
         
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
-          error: "Internal server error",
-          message: "Model error"
+          message: "Internal server error"
         });
         
         spy.mockRestore();
@@ -486,7 +535,7 @@ describe('Graphs Model and Controller', () => {
       it('should get crime trends with default parameters', async () => {
         const spy = jest.spyOn(GraphsModel, 'getCrimeTrends').mockResolvedValue([]);
 
-        await GraphsController.getCrimeTrends(req, res);
+        await invokeController(() => GraphsController.getCrimeTrends(req, res));
         
         expect(spy).toHaveBeenCalledWith('2020-01-01', undefined, undefined, 3, undefined, 'month');
         expect(res.json).toHaveBeenCalled();
@@ -498,22 +547,48 @@ describe('Graphs Model and Controller', () => {
         req.query = { groupBy: 'year' };
         const spy = jest.spyOn(GraphsModel, 'getCrimeTrends').mockResolvedValue([]);
 
-        await GraphsController.getCrimeTrends(req, res);
+        await invokeController(() => GraphsController.getCrimeTrends(req, res));
         
         expect(spy).toHaveBeenCalledWith('2020-01-01', undefined, undefined, 3, undefined, 'year');
         
         spy.mockRestore();
       });
 
+      it('should return 400 for an invalid groupBy value', async () => {
+        req.query = { groupBy: 'week' };
+
+        await invokeController(() => GraphsController.getCrimeTrends(req, res));
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+          error: 'Bad request',
+          message: 'groupBy must be "month" or "year"'
+        });
+      });
+
+      it('should return 400 when endDate is before startDate', async () => {
+        req.query = {
+          startDate: '2023-12-31',
+          endDate: '2023-01-01'
+        };
+
+        await invokeController(() => GraphsController.getCrimeTrends(req, res));
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+          error: 'Bad request',
+          message: 'startDate must be before or equal to endDate'
+        });
+      });
+
       it('should handle errors and return 500', async () => {
         const spy = jest.spyOn(GraphsModel, 'getCrimeTrends').mockRejectedValue(new Error('Trends error'));
 
-        await GraphsController.getCrimeTrends(req, res);
+        await invokeController(() => GraphsController.getCrimeTrends(req, res));
         
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
-          error: "Internal server error",
-          message: "Trends error"
+          message: "Internal server error"
         });
         
         spy.mockRestore();
@@ -524,7 +599,7 @@ describe('Graphs Model and Controller', () => {
       it('should get crime proportions successfully', async () => {
         const spy = jest.spyOn(GraphsModel, 'getCrimeProportions').mockResolvedValue([]);
 
-        await GraphsController.getCrimeProportions(req, res);
+        await invokeController(() => GraphsController.getCrimeProportions(req, res));
         
         expect(spy).toHaveBeenCalled();
         expect(res.json).toHaveBeenCalled();
@@ -535,7 +610,7 @@ describe('Graphs Model and Controller', () => {
       it('should handle errors and return 500', async () => {
         const spy = jest.spyOn(GraphsModel, 'getCrimeProportions').mockRejectedValue(new Error('Proportions error'));
 
-        await GraphsController.getCrimeProportions(req, res);
+        await invokeController(() => GraphsController.getCrimeProportions(req, res));
         
         expect(res.status).toHaveBeenCalledWith(500);
         
@@ -547,7 +622,7 @@ describe('Graphs Model and Controller', () => {
       it('should get available locations successfully', async () => {
         const spy = jest.spyOn(GraphsModel, 'getAvailableLocations').mockResolvedValue([]);
 
-        await GraphsController.getAvailableLocations(req, res);
+        await invokeController(() => GraphsController.getAvailableLocations(req, res));
         
         expect(spy).toHaveBeenCalled();
         expect(res.json).toHaveBeenCalled();
@@ -558,7 +633,7 @@ describe('Graphs Model and Controller', () => {
       it('should handle errors and return 500', async () => {
         const spy = jest.spyOn(GraphsModel, 'getAvailableLocations').mockRejectedValue(new Error('Locations error'));
 
-        await GraphsController.getAvailableLocations(req, res);
+        await invokeController(() => GraphsController.getAvailableLocations(req, res));
         
         expect(res.status).toHaveBeenCalledWith(500);
         
@@ -570,7 +645,7 @@ describe('Graphs Model and Controller', () => {
       it('should get date range successfully', async () => {
         const spy = jest.spyOn(GraphsModel, 'getDateRange').mockResolvedValue({});
 
-        await GraphsController.getDateRange(req, res);
+        await invokeController(() => GraphsController.getDateRange(req, res));
         
         expect(spy).toHaveBeenCalled();
         expect(res.json).toHaveBeenCalled();
@@ -581,7 +656,7 @@ describe('Graphs Model and Controller', () => {
       it('should handle errors and return 500', async () => {
         const spy = jest.spyOn(GraphsModel, 'getDateRange').mockRejectedValue(new Error('Date range error'));
 
-        await GraphsController.getDateRange(req, res);
+        await invokeController(() => GraphsController.getDateRange(req, res));
         
         expect(res.status).toHaveBeenCalledWith(500);
         
@@ -591,7 +666,7 @@ describe('Graphs Model and Controller', () => {
 
     describe('getCrimeTypes', () => {
       it('should return static crime types array', async () => {
-        await GraphsController.getCrimeTypes(req, res);
+        await invokeController(() => GraphsController.getCrimeTypes(req, res));
         
         expect(res.json).toHaveBeenCalledWith([
           'burglary',

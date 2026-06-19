@@ -16,9 +16,19 @@ const EducationalController = require('../controller/educationalController');
 const db = require('../database/connect');
 const Crime = require('../model/mapModel');
 const User = require('../model/userModel');
+const errorHandler = require('../middleware/errorHandler');
 
 describe('Educational Model and Controller', () => {
   let req, res;
+  const next = jest.fn();
+
+  const invokeController = async (handler) => {
+    try {
+      await handler();
+    } catch (error) {
+      errorHandler(error, req, res, next);
+    }
+  };
 
   beforeAll(() => {
     jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -210,7 +220,7 @@ describe('Educational Model and Controller', () => {
     describe('getResources', () => {
       it('should return all resources if no userId', async () => {
         const spy = jest.spyOn(EducationalModel, 'getAllResources').mockResolvedValue([{ id: 1 }]);
-        await EducationalController.getResources(req, res);
+        await invokeController(() => EducationalController.getResources(req, res));
         expect(spy).toHaveBeenCalled();
         expect(res.json).toHaveBeenCalledWith({
           resources: [{ id: 1 }],
@@ -232,7 +242,7 @@ describe('Educational Model and Controller', () => {
         const resourcesSpy = jest.spyOn(EducationalModel, 'getTailoredResources').mockResolvedValue(tailored);
         Crime.getLocationNameFromH3.mockResolvedValue('London');
 
-        await EducationalController.getResources(req, res);
+        await invokeController(() => EducationalController.getResources(req, res));
         expect(resourcesSpy).toHaveBeenCalledWith('123456789');
         expect(res.json).toHaveBeenCalledWith({
           resources: tailored,
@@ -250,7 +260,7 @@ describe('Educational Model and Controller', () => {
         User.findById.mockResolvedValue({ h3: null });
         const spy = jest.spyOn(EducationalModel, 'getAllResources').mockResolvedValue([{ id: 1 }]);
         
-        await EducationalController.getResources(req, res);
+        await invokeController(() => EducationalController.getResources(req, res));
         expect(spy).toHaveBeenCalled();
         spy.mockRestore();
       });
@@ -260,7 +270,7 @@ describe('Educational Model and Controller', () => {
         User.findById.mockRejectedValue(new Error('User error'));
         const spy = jest.spyOn(EducationalModel, 'getAllResources').mockResolvedValue([{ id: 1 }]);
         
-        await EducationalController.getResources(req, res);
+        await invokeController(() => EducationalController.getResources(req, res));
         expect(spy).toHaveBeenCalled();
         spy.mockRestore();
       });
@@ -268,11 +278,10 @@ describe('Educational Model and Controller', () => {
       it('should handle main errors and return 500', async () => {
         const spy = jest.spyOn(EducationalModel, 'getAllResources').mockRejectedValue(new Error('fail'));
         
-        await EducationalController.getResources(req, res);
+        await invokeController(() => EducationalController.getResources(req, res));
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
-          error: "Internal server error",
-          message: "fail"
+          message: "Internal server error"
         });
         spy.mockRestore();
       });
@@ -281,16 +290,19 @@ describe('Educational Model and Controller', () => {
     describe('getResourcesByCrimeType', () => {
       it('should return 400 if crimeType is missing', async () => {
         req.params = {};
-        await EducationalController.getResourcesByCrimeType(req, res);
+        await invokeController(() => EducationalController.getResourcesByCrimeType(req, res));
         expect(res.status).toHaveBeenCalledWith(400);
-        expect(res.json).toHaveBeenCalledWith({ error: "Crime type is required" });
+        expect(res.json).toHaveBeenCalledWith({
+          error: "Crime type is required",
+          message: "Crime type is required"
+        });
       });
 
       it('should return resources for valid crimeType', async () => {
         req.params = { crimeType: 'burglary' };
         const spy = jest.spyOn(EducationalModel, 'getResourcesByCrimeTypes').mockResolvedValue([{ id: 1 }]);
         
-        await EducationalController.getResourcesByCrimeType(req, res);
+        await invokeController(() => EducationalController.getResourcesByCrimeType(req, res));
         expect(spy).toHaveBeenCalledWith(['burglary']);
         expect(res.json).toHaveBeenCalledWith({
           resources: [{ id: 1 }],
@@ -304,11 +316,10 @@ describe('Educational Model and Controller', () => {
         req.params = { crimeType: 'burglary' };
         const spy = jest.spyOn(EducationalModel, 'getResourcesByCrimeTypes').mockRejectedValue(new Error('fail'));
         
-        await EducationalController.getResourcesByCrimeType(req, res);
+        await invokeController(() => EducationalController.getResourcesByCrimeType(req, res));
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
-          error: "Internal server error",
-          message: "fail"
+          message: "Internal server error"
         });
         spy.mockRestore();
       });
