@@ -1,163 +1,247 @@
 # StreetSafe Server
 
-StreetSafe Server is a Node.js backend API for crime data analysis, educational resources, and emergency services information. Built with Express and PostgreSQL, it provides geospatial crime analytics using H3 hexagonal indexing for precise location-based queries.
+StreetSafe Server is a Node.js and Express backend for crime data analytics, route planning, educational safety resources, and nearby emergency service lookup. It uses PostgreSQL with H3 geospatial indexing and integrates with Valhalla, Nominatim, Google Places, and Google Geocoding.
 
 ## Features
 
-###  User Authentication
-###  Crime Data Analytics
-###  Map Integration
-###  Educational Resources
-###  Emergency Services
+- Cookie-based user authentication with JWT
+- Crime analytics endpoints for totals, trends, and proportions
+- H3-powered map and hexagon detail data
+- Tailored educational resources
+- Nearby police and hospital lookup
+- Route planning, reverse geocoding, place search, and geocoding
+- Startup config validation, `/health` readiness checks, and targeted rate limiting
 
 ## Tech Stack
 
-- **Backend**: Node.js, Express.js
-- **Database**: PostgreSQL with H3 extension for geospatial operations
-- **Authentication**: JSON Web Tokens (JWT)
-- **Testing**: Jest with comprehensive unit tests (80%+ coverage)
-- **Geolocation**: H3 hexagonal indexing, Nominatim geocoding
-- **Data Processing**: CSV import tools for emergency services and Police.uk crime data
+- Backend: Node.js, Express.js
+- Database: PostgreSQL with `h3` and `h3_postgis`
+- Authentication: JWT in `httpOnly` cookies
+- Testing: Jest
+- Geospatial: H3, Nominatim, Valhalla
+- External APIs: Google Places API, Google Geocoding API
 
 ## Database Schema
 
-### Core Tables
-- `users` - User authentication and profiles
-- `crime_areas` - Crime statistics with H3 geospatial indexing
-- `educational_resources` - Crime prevention and safety resources
-- `emergency_services` - Police, hospital, and fire service locations
-
+- `users` - registered users and home H3 cell
+- `crime_areas` - aggregated crime data by H3 cell and date
+- `educational_sources` - educational and support resources
+- `emergency_services` - police and hospital locations
 
 ## Getting Started
 
 ### Prerequisites
 
-- **Node.js** (v18+ recommended)
-- **PostgreSQL** (v13+) with H3 extension installed
-- **Environment variables** configured in `.env` file
+- Node.js 18+
+- PostgreSQL 13+ with `h3` and `h3_postgis`
+- A `.env` file with the required variables below
 
 ### Installation
 
 ```bash
-# Clone the repository
 git clone <repository-url>
 cd streetsafe-server
-
-# Install dependencies
 npm install
+```
 
-# Set up environment variables
-create .env file 
-# .env with your database connection details, port, jwt_secret and node_env
+### Environment Variables
+
+These are required at startup:
+
+```env
+DB_URL=postgresql://user:password@localhost:5432/streetsafe
+JWT_SECRET=your-secret-key
+VALHALLA_URL=http://localhost:8002
+MAPS_API_KEY=your-google-maps-key
+```
+
+These are optional:
+
+```env
+PORT=3000
+NODE_ENV=development
+FRONTEND_URLS=https://streetsafe-client.onrender.com,http://localhost:5173
+POLICE_DATA_DIR=..\\police-data
+CRIME_H3_RESOLUTION=9
+VALHALLA_TILE_URL=
+VALHALLA_THREADS=2
+AUTH_RATE_LIMIT_WINDOW_MS=900000
+AUTH_RATE_LIMIT_MAX=10
+EXTERNAL_RATE_LIMIT_WINDOW_MS=60000
+EXTERNAL_RATE_LIMIT_MAX=30
 ```
 
 ### Database Setup
 
 ```bash
-# Create database schema and seed educational resources
 npm run setup-db
-
-# Import emergency services data from CSV files
 npm run import
-
-# Import downloaded Police.uk monthly crime folders
-# PowerShell example:
 npm run import:crime -- "..\\police-data"
 ```
 
-The crime importer scans the folder recursively and only loads `*-street.csv` files from the Police.uk download.
-It aggregates point crimes into H3 cells and upserts them into the `crime_areas` table used by the live API.
+The crime importer scans the given folder recursively and only imports `*-street.csv` files from Police.uk downloads.
 
 ### Running the Server
 
 ```bash
-# Production mode
 npm start
+```
 
-# Development mode with auto-reload
+For development:
+
+```bash
 npm run dev
+```
 
-# Server runs on http://localhost:3000 (or PORT from .env)
+The app runs on `http://localhost:3000` by default.
+
+### Docker Compose
+
+`docker-compose.yml` starts the API and a Valhalla container together. The app service injects:
+
+- `VALHALLA_URL=http://valhalla:8002`
+- `NODE_ENV=production`
+
+Run it with:
+
+```bash
+docker compose up --build
 ```
 
 ### Testing
 
 ```bash
-# Run all tests
 npm test
-
-# Run tests with coverage report
-npm run test:coverage
-
-# Run specific test file
-npm test graphsTests.js
+npm run coverage
+npm test -- graphsTests.js
 ```
+
+## Health and Readiness
+
+### `GET /health`
+
+Returns backend readiness information for:
+
+- required config presence
+- database connectivity
+
+It returns:
+
+- `200` when the app is ready
+- `503` when config or database checks are degraded
 
 ## API Endpoints
 
 ### Authentication (`/api/auth`)
+
 ```http
-POST /api/auth/register     # Register new user
-POST /api/auth/login        # User login
-POST /api/auth/logout       # User logout
-GET  /api/auth/profile      # Get user profile (Protected)
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+GET  /api/auth/profile
 ```
+
+Notes:
+
+- `register` and `login` are rate limited
+- `profile` requires a valid `auth_token` cookie
 
 ### Crime Analytics (`/api/graphs`)
+
 ```http
-GET /api/graphs/totals      # Crime totals by category (bar chart)
-GET /api/graphs/trends      # Crime trends over time (line chart)  
-GET /api/graphs/proportions # Crime proportions (pie chart)
-GET /api/graphs/locations   # Available H3 locations
-GET /api/graphs/dates       # Available date range
-GET /api/graphs/crime-types # Supported crime categories
+GET /api/graphs/totals
+GET /api/graphs/trends
+GET /api/graphs/proportions
+GET /api/graphs/locations
+GET /api/graphs/date-range
+GET /api/graphs/dates
+GET /api/graphs/crime-types
 ```
-    **Query Parameters:**
-    - `startDate`, `endDate` - Date range filtering (YYYY-MM-DD)
-    - `location` - Natural language location (e.g., "London", "Manchester")
-    - `radius` - Search radius in kilometers (default: 3km)
-    - `crimeTypes` - Comma-separated crime types for filtering
-    - `groupBy` - Time grouping: "month" or "year" (trends only)
+
+Query parameters:
+
+- `startDate`, `endDate`: `YYYY-MM-DD`
+- `location`: non-empty natural language place name
+- `radius`: positive number in km
+- `crimeTypes`: comma-separated values from the supported crime list
+- `groupBy`: `month` or `year` for trends
+
+Validation notes:
+
+- invalid dates, radius, groupings, crime types, or locations return `400`
+- `/dates` is a compatibility alias for `/date-range`
 
 ### Map Data (`/api/map`)
+
 ```http
-GET /api/map                       # All crime data for map hexagons
-GET /api/map/features              # Legacy alias for all crime data
-GET /api/map/hex/:h3Index          # Specific hexagon data with emergency services
-GET /api/map/hexagon/:h3Index      # Supported alias for specific hexagon data
+GET /api/map
+GET /api/map/features
+GET /api/map/hex/:h3Index
+GET /api/map/hexagon/:h3Index
 ```
+
+Notes:
+
+- `/features` is a compatibility alias for `/api/map`
+- `/hexagon/:h3Index` is a compatibility alias for `/hex/:h3Index`
 
 ### Educational Resources (`/api/educational`)
+
 ```http
-GET /api/educational/resources     # Crime prevention resources
-?crimeTypes=burglary,violent      # Filter by crime types
+GET /api/educational
+GET /api/educational/resources
+GET /api/educational/crime-type/:crimeType
 ```
+
+Notes:
+
+- `/resources` is a compatibility alias for `/api/educational`
+- personalised responses use the authenticated user's H3 area when available
 
 ### Emergency Services (`/api/emerg-services`)
+
 ```http
-GET /api/emerg-services/closest    # Find nearest emergency services
-?h3Index=123456789                # H3 location index
+GET /api/emerg-services/closest?h3Index=<h3-index>
 ```
 
+Returns the closest police station and hospital for the provided H3 index.
 
+### Route Planning and Places (`/api/go`)
 
-## Configuration
-
-### Environment Variables (.env)
-```env
-# Database
-DB_URL=postgresql://user:password@localhost:5432/streetsafe
-
-# Optional crime import settings
-POLICE_DATA_DIR=..\\police-data
-CRIME_H3_RESOLUTION=9
-
-# Authentication
-JWT_SECRET=your-secret-key-here
-JWT_EXPIRES_IN=24h
-
-# Server
-PORT=3000
-NODE_ENV=development
+```http
+POST /api/go
+POST /api/go/reverse
+POST /api/go/search?q=<query>&bias=<lon,lat>
+POST /api/go/geocode?place=<place-id>
 ```
 
+Request notes:
+
+- `POST /api/go` expects `[[lon, lat], [lon, lat]]`
+- `POST /api/go/reverse` expects `[lon, lat]`
+- `q` is required for `/search`
+- `place` is required for `/geocode`
+- `bias` must be `lon,lat` if provided
+
+These endpoints are rate limited because they call external services.
+
+## Security and Operational Notes
+
+- CORS is restricted to configured frontend origins plus localhost during development
+- Auth cookies are `httpOnly` and switch to `SameSite=None` with `secure=true` in production
+- Startup fails fast if required environment variables are missing
+- Auth and external-service-heavy routes are rate limited
+
+## Current Test Status
+
+The backend test suite currently covers:
+
+- auth flows
+- graph and map controllers/models
+- educational resources
+- emergency services
+- health and env validation
+- rate limiting
+- route planning and external API wrappers
+
+Run `npm run coverage` for the current local report.
