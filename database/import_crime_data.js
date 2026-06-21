@@ -16,10 +16,14 @@ const CATEGORY_MAP = {
   "criminal damage and arson": "damage",
   "criminal damage & arson": "damage",
   drugs: "drugs",
+  "other crime": "damage",
+  "other theft": "personal_theft",
+  "public order": "anti_social",
   robbery: "robbery",
   shoplifting: "shoplifting",
   "theft from the person": "personal_theft",
   "possession of weapons": "weapon_crime",
+  "violence and sexual offences": "violent",
   "violent crime": "violent",
   "vehicle crime": "vehicle_crime"
 };
@@ -300,11 +304,19 @@ async function main() {
   console.log(`Skipped rows with unsupported categories: ${stats.skippedUnsupportedCategory}`);
 }
 
-main()
-  .catch((error) => {
-    console.error("Crime import failed:", error.message);
-    process.exitCode = 1;
-  })
-  .finally(async () => {
-    await db.end();
-  });
+if (require.main === module) {
+  main()
+    .catch((error) => {
+      console.error("Crime import failed:", error.message);
+      process.exitCode = 1;
+    })
+    .finally(async () => {
+      await db.end();
+    });
+}
+
+module.exports = {
+  CATEGORY_MAP,
+  normaliseCrimeType,
+  isStreetCrimeCsv
+};
