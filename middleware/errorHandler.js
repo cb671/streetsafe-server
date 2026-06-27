@@ -11,6 +11,11 @@ const errorHandler = (err, req, res, next) => {
   if(err.details) payload.details = err.details;
 
   if(statusCode >= 500){
+    console.error(JSON.stringify({
+  message: err.message,
+  statusCode: err.statusCode,
+  details: err.details
+}, null, 2));
     console.error(err);
   }
 
