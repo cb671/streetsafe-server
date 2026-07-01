@@ -31,7 +31,36 @@ class HealthController {
       }
     }
 
-    const ok = config.ok && database.ok;
+    let valhalla = {
+      ok: false,
+      status: "not_configured"
+    };
+
+    if (config.missing.includes("VALHALLA_URL")) {
+      valhalla = {
+        ok: false,
+        status: "not_configured"
+      };
+    } else {
+      try {
+        const response = await fetch(process.env.VALHALLA_URL, {
+          signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined
+        });
+        valhalla = {
+          ok: true,
+          status: "up",
+          httpStatus: response.status
+        };
+      } catch (error) {
+        valhalla = {
+          ok: false,
+          status: "down",
+          message: error.message
+        };
+      }
+    }
+
+    const ok = config.ok && database.ok && valhalla.ok;
 
     res.status(ok ? 200 : 503).json({
       status: ok ? "ok" : "degraded",
@@ -40,7 +69,8 @@ class HealthController {
           ok: config.ok,
           missing: config.missing
         },
-        database
+        database,
+        valhalla
       }
     });
   }

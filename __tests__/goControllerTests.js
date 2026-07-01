@@ -120,6 +120,7 @@ describe('Go controller and error handling', () => {
     expect(res.json).toHaveBeenCalledWith([
       {
         code: 'Ok',
+        crime_factor: 0,
         routes: [{
           geometry: { coordinates: [[0, 0], [1, 1]] },
           distance: 1.2,
@@ -129,6 +130,7 @@ describe('Go controller and error handling', () => {
       },
       {
         code: 'Ok',
+        crime_factor: 200,
         routes: [{
           geometry: { coordinates: [[0, 0], [2, 2], [3, 3]] },
           distance: 2.5,

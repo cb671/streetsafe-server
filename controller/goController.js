@@ -11,6 +11,12 @@ const isCoordinatePair = (value) =>
   isFiniteCoordinate(value[0], -180, 180) &&
   isFiniteCoordinate(value[1], -90, 90);
 
+const crimeFactorByMode = {
+  direct: 0,
+  informed: 75,
+  cautious: 200
+};
+
 class GoController{
   static async calculate(req, res){
     if(
@@ -31,7 +37,10 @@ class GoController{
       const route = r.routes[0];
       let key = `g${route.geometry.coordinates.length}d${route.distance}d${route.duration}`;
       if(existing.has(key)) continue;
-      routesRes.push(r);
+      routesRes.push({
+        ...r,
+        crime_factor: crimeFactorByMode[r.mode]
+      });
       existing.set(key, true);
     }
 
