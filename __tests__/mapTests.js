@@ -313,6 +313,46 @@ describe('Map Model and Controller', () => {
         expect(result).toBe('London, Greater London');
       });
 
+      it('should use rural fallback fields when city-style fields are missing', async () => {
+        db.query.mockResolvedValue({
+          rows: [{ coords: { x: -6.701, y: 54.607 } }]
+        });
+
+        global.fetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve({
+            address: {
+              hamlet: 'Mullaghmore',
+              locality: 'Omagh Rural',
+              state: 'Northern Ireland'
+            }
+          })
+        });
+
+        const result = await Crime.getLocationNameFromH3('123456789');
+        expect(result).toBe('Mullaghmore, Northern Ireland');
+      });
+
+      it('should use NI-style district fields when county is missing', async () => {
+        db.query.mockResolvedValue({
+          rows: [{ coords: { x: -5.9301, y: 54.5973 } }]
+        });
+
+        global.fetch.mockResolvedValue({
+          ok: true,
+          json: () => Promise.resolve({
+            address: {
+              suburb: 'Ballyhackamore',
+              county_district: 'Belfast',
+              state_district: 'County Antrim'
+            }
+          })
+        });
+
+        const result = await Crime.getLocationNameFromH3('123456789');
+        expect(result).toBe('Ballyhackamore, Belfast, County Antrim');
+      });
+
       it('should handle empty address from geocoding API', async () => {
         db.query.mockResolvedValue({
           rows: [{ coords: { x: -0.1278, y: 51.5074 } }]

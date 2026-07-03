@@ -1,6 +1,13 @@
 const db = require("../database/connect");
 
 class Crime {
+  static getFirstAddressValue(address, fields) {
+    for (const field of fields) {
+      if (address[field]) return address[field];
+    }
+    return null;
+  }
+
   static async getCrimeDataByH3(startDate, endDate = null) {
     try {
       const query = `
@@ -147,9 +154,26 @@ class Crime {
       const address = data.address || {};
 
       const locationParts = [
-        address.neighbourhood || address.suburb,
-        address.city || address.town || address.village,
-        address.county
+        this.getFirstAddressValue(address, [
+          "neighbourhood",
+          "suburb",
+          "hamlet",
+          "locality",
+          "quarter"
+        ]),
+        this.getFirstAddressValue(address, [
+          "city",
+          "town",
+          "village",
+          "municipality",
+          "city_district",
+          "county_district"
+        ]),
+        this.getFirstAddressValue(address, [
+          "county",
+          "state_district",
+          "state"
+        ])
       ].filter(Boolean);
 
       const uniqueLocationParts = locationParts.filter((part, index, array) => 
@@ -209,7 +233,6 @@ class Crime {
 }
 
 module.exports = Crime;
-
 
 
 
