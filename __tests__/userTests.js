@@ -7,6 +7,10 @@ jest.mock('bcrypt', () => ({
   compare: jest.fn()
 }));
 
+jest.mock('h3-js', () => ({
+  geoToH3: jest.fn()
+}));
+
 jest.mock('jsonwebtoken', () => ({
   sign: jest.fn(),
   verify: jest.fn()
@@ -19,6 +23,7 @@ const User = require('../model/userModel');
 const AuthController = require('../controller/authController');
 const db = require('../database/connect');
 const bcrypt = require('bcrypt');
+const { geoToH3 } = require('h3-js');
 const jwt = require('jsonwebtoken');
 const errorHandler = require('../middleware/errorHandler');
 
@@ -108,7 +113,7 @@ describe('User Model and Auth Controller', () => {
         const result = await User.findByEmail('john@example.com');
 
         expect(db.query).toHaveBeenCalledWith(
-          'SELECT *, h3::h3index FROM users WHERE email = $1',
+          'SELECT * FROM users WHERE email = $1',
           ['john@example.com']
         );
         expect(result).toEqual(mockUser);
@@ -138,7 +143,7 @@ describe('User Model and Auth Controller', () => {
         const result = await User.findById(1);
 
         expect(db.query).toHaveBeenCalledWith(
-          'SELECT id, name, email, h3::h3index, created_at FROM users WHERE id = $1',
+          'SELECT id, name, email, h3, created_at FROM users WHERE id = $1',
           [1]
         );
         expect(result).toEqual(mockUser);
@@ -187,7 +192,7 @@ describe('User Model and Auth Controller', () => {
           json: () => Promise.resolve(mockApiResponse)
         });
 
-        db.query.mockResolvedValue({ rows: [{ h3_index: '123456789' }] });
+        geoToH3.mockReturnValue('123456789');
 
         const result = await User.postcodeToH3('SW1A 1AA');
 
@@ -197,10 +202,7 @@ describe('User Model and Auth Controller', () => {
             headers: { 'User-Agent': 'StreetSafe-App/1.0' }
           })
         );
-        expect(db.query).toHaveBeenCalledWith(
-          'SELECT h3_lat_lng_to_cell(POINT($1, $2), 9)::h3index as h3_index',
-          [-0.1278, 51.5074]
-        );
+        expect(geoToH3).toHaveBeenCalledWith(51.5074, -0.1278, 9);
         expect(result).toBe('123456789');
       });
 
