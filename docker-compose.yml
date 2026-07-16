@@ -1,12 +1,33 @@
 services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: streetsafe
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d streetsafe"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   app:
     build:
       context: .
     depends_on:
-      - valhalla
+      db:
+        condition: service_healthy
+      valhalla:
+        condition: service_started
     env_file:
       - .env
     environment:
+      DB_URL: postgresql://postgres:postgres@db:5432/streetsafe
       VALHALLA_URL: http://valhalla:8002
       NODE_ENV: production
     ports:
@@ -28,3 +49,6 @@ services:
     volumes:
       - ./valhalla-data:/custom_files
     restart: unless-stopped
+
+volumes:
+  postgres-data:

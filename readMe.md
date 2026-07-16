@@ -97,8 +97,15 @@ The app runs on `http://localhost:3000` by default.
 
 ### Docker Compose
 
-`docker-compose.yml` starts the API and a Valhalla container together. The app service injects:
+`docker-compose.yml` starts three local services together:
 
+- `db` - local PostgreSQL
+- `app` - the API
+- `valhalla` - routing engine
+
+When you run through Docker Compose, the app service injects:
+
+- `DB_URL=postgresql://postgres:postgres@db:5432/streetsafe`
 - `VALHALLA_URL=http://valhalla:8002`
 - `NODE_ENV=production`
 
@@ -107,6 +114,22 @@ Run it with:
 ```bash
 docker compose up --build
 ```
+
+To initialise a fresh local database after the containers are up:
+
+```bash
+npm run setup-db
+npm run import
+npm run import:crime -- "..\\police-data"
+```
+
+Important:
+
+- `setup.sql` currently starts with `DROP TABLE IF EXISTS`, so running `npm run setup-db` will recreate the schema and remove previously registered users
+- the app relies on PostgreSQL H3 functions in analytics and map queries, so local Postgres must support the `h3` and `h3_postgis` extensions for the full app to work
+- auth itself uses the `users` table in Postgres, not a local `app.db` file
+
+For non-Docker local development, point `DB_URL` in `.env` at your own local Postgres instance instead of the hosted Neon database.
 
 ### Testing
 
@@ -196,7 +219,9 @@ GET /api/educational/crime-type/:crimeType
 Notes:
 
 - `/resources` is a compatibility alias for `/api/educational`
-- personalised responses use the authenticated user's H3 area when available
+- `GET /api/educational` and `GET /api/educational/resources` optionally personalise responses from the authenticated user's H3 area
+- pass `?personalised=false` to disable personalisation on those two endpoints
+- `GET /api/educational/crime-type/:crimeType` filters by a single crime type path parameter
 
 ### Emergency Services (`/api/emerg-services`)
 
@@ -211,16 +236,16 @@ Returns the closest police station and hospital for the provided H3 index.
 ```http
 POST /api/go
 POST /api/go/reverse
-POST /api/go/search?q=<query>&bias=<lon,lat>
-POST /api/go/geocode?place=<place-id>
+POST /api/go/search
+POST /api/go/geocode
 ```
 
 Request notes:
 
 - `POST /api/go` expects `[[lon, lat], [lon, lat]]`
 - `POST /api/go/reverse` expects `[lon, lat]`
-- `q` is required for `/search`
-- `place` is required for `/geocode`
+- `POST /api/go/search` requires query parameter `q`; optional `bias=lon,lat`
+- `POST /api/go/geocode` requires query parameter `place`
 - `bias` must be `lon,lat` if provided
 
 These endpoints are rate limited because they call external services.
