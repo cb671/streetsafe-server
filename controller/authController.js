@@ -26,9 +26,40 @@ class AuthController {
       });
     }
 
-    const h3Index = await User.postcodeToH3(postcode);
+    let h3Index;
+    try {
+      h3Index = await User.postcodeToH3(postcode);
+    } catch (error) {
+      if (error.statusCode) {
+        throw error;
+      }
 
-    const user = await User.create(name, email, password, h3Index);
+      throw createHttpError(400, "Invalid postcode", {
+        error: "Invalid postcode",
+        details: {
+          postcode,
+          reason: error.message
+        }
+      });
+    }
+
+    let user;
+    try {
+      user = await User.create(name, email, password, h3Index);
+    } catch (error) {
+      if (error.statusCode) {
+        throw error;
+      }
+
+      throw createHttpError(500, "Unable to create user account", {
+        expose: true,
+        error: "Registration failed",
+        details: {
+          email,
+          reason: error.message
+        }
+      });
+    }
 
     const token = jwt.sign(
       { userId: user.id, email: user.email },

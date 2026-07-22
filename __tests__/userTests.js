@@ -332,9 +332,39 @@ describe('User Model and Auth Controller', () => {
 
         await invokeController(() => AuthController.register(req, res));
 
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+          error: "Invalid postcode",
+          message: "Invalid postcode",
+          details: {
+            postcode: 'INVALID',
+            reason: 'Invalid postcode'
+          }
+        });
+      });
+
+      it('should return a clearer error when user creation fails', async () => {
+        req.body = {
+          name: 'John Doe',
+          email: 'john@example.com',
+          password: 'password123',
+          postcode: 'SW1A 1AA'
+        };
+
+        User.findByEmail = jest.fn().mockResolvedValue(null);
+        User.postcodeToH3 = jest.fn().mockResolvedValue('123456789');
+        User.create = jest.fn().mockRejectedValue(new Error('Database connection failed'));
+
+        await invokeController(() => AuthController.register(req, res));
+
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
-          message: "Internal server error"
+          error: "Registration failed",
+          message: "Unable to create user account",
+          details: {
+            email: 'john@example.com',
+            reason: 'Database connection failed'
+          }
         });
       });
     });
