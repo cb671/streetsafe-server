@@ -73,6 +73,12 @@ EXTERNAL_RATE_LIMIT_MAX=30
 
 ### Database Setup
 
+> **Production warning:** Do not run `npm run setup-db` against the production
+> database. The current setup script drops and recreates the `users`,
+> `emergency_services`, and `educational_sources` tables, which deletes their
+> existing data. If you create or intentionally reset a database, run
+> `npm run import` afterwards to populate the emergency-services table.
+
 ```bash
 npm run setup-db
 npm run import
@@ -125,7 +131,8 @@ npm run import:crime -- "..\\police-data"
 
 Important:
 
-- `setup.sql` currently starts with `DROP TABLE IF EXISTS`, so running `npm run setup-db` will recreate the schema and remove previously registered users
+- `setup.sql` currently starts with `DROP TABLE IF EXISTS`, so `npm run setup-db` is intended only for disposable local databases; never run it against the production `DB_URL`
+- `npm run import` is safe to use to restore emergency-service data after an intentional database reset, but the current importer is not idempotent and will create duplicate rows if run repeatedly without clearing the table first
 - the app relies on PostgreSQL H3 functions in analytics and map queries, so local Postgres must support the `h3` and `h3_postgis` extensions for the full app to work
 - auth itself uses the `users` table in Postgres, not a local `app.db` file
 
