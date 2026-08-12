@@ -1,33 +1,36 @@
-jest.mock('../database/connect', () => ({
-  query: jest.fn()
+jest.mock("../database/connect", () => ({
+  query: jest.fn(),
 }));
 
-jest.mock('bcrypt', () => ({
+jest.mock("bcrypt", () => ({
   hash: jest.fn(),
-  compare: jest.fn()
+  compare: jest.fn(),
 }));
 
-jest.mock('h3-js', () => ({
-  geoToH3: jest.fn()
+jest.mock("h3-js", () => ({
+  geoToH3: jest.fn(),
 }));
 
-jest.mock('jsonwebtoken', () => ({
+jest.mock("jsonwebtoken", () => ({
   sign: jest.fn(),
-  verify: jest.fn()
+  verify: jest.fn(),
 }));
-
 
 global.fetch = jest.fn();
 
-const User = require('../model/userModel');
-const AuthController = require('../controller/authController');
-const db = require('../database/connect');
-const bcrypt = require('bcrypt');
-const { geoToH3 } = require('h3-js');
-const jwt = require('jsonwebtoken');
-const errorHandler = require('../middleware/errorHandler');
+const User = require("../model/userModel");
+const AuthController = require("../controller/authController");
+const db = require("../database/connect");
+const bcrypt = require("bcrypt");
+const { geoToH3 } = require("h3-js");
+const jwt = require("jsonwebtoken");
+const errorHandler = require("../middleware/errorHandler");
 
-describe('User Model and Auth Controller', () => {
+jest.mock("../utils/emailService", () => ({
+  sendRegistrationConfirmation: jest.fn(),
+}));
+
+describe("User Model and Auth Controller", () => {
   let req, res;
   const next = jest.fn();
 
@@ -40,8 +43,8 @@ describe('User Model and Auth Controller', () => {
   };
 
   beforeAll(() => {
-    jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterAll(() => {
@@ -51,91 +54,101 @@ describe('User Model and Auth Controller', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
 
     req = {
       body: {},
       userId: null,
-      cookies: {}
+      cookies: {},
     };
     res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
       cookie: jest.fn(),
-      clearCookie: jest.fn()
+      clearCookie: jest.fn(),
     };
   });
 
-  describe('User Model Tests', () => {
-    describe('create', () => {
-      it('should create a new user successfully', async () => {
+  describe("User Model Tests", () => {
+    describe("create", () => {
+      it("should create a new user successfully", async () => {
         const mockUser = {
           id: 1,
-          name: 'John Doe',
-          email: 'john@example.com',
-          h3: '123456789',
-          created_at: new Date()
+          name: "John Doe",
+          email: "john@example.com",
+          h3: "123456789",
+          created_at: new Date(),
         };
 
-        bcrypt.hash.mockResolvedValue('hashedPassword123');
+        bcrypt.hash.mockResolvedValue("hashedPassword123");
         db.query.mockResolvedValue({ rows: [mockUser] });
 
-        const result = await User.create('John Doe', 'john@example.com', 'password123', '123456789');
+        const result = await User.create(
+          "John Doe",
+          "john@example.com",
+          "password123",
+          "123456789",
+        );
 
-        expect(bcrypt.hash).toHaveBeenCalledWith('password123', 12);
+        expect(bcrypt.hash).toHaveBeenCalledWith("password123", 12);
         expect(db.query).toHaveBeenCalledWith(
-          expect.stringContaining('INSERT INTO users'),
-          ['John Doe', 'john@example.com', 'hashedPassword123', '123456789']
+          expect.stringContaining("INSERT INTO users"),
+          ["John Doe", "john@example.com", "hashedPassword123", "123456789"],
         );
         expect(result).toEqual(mockUser);
       });
 
-      it('should throw error when database fails', async () => {
-        bcrypt.hash.mockResolvedValue('hashedPassword123');
-        db.query.mockRejectedValue(new Error('Database connection failed'));
+      it("should throw error when database fails", async () => {
+        bcrypt.hash.mockResolvedValue("hashedPassword123");
+        db.query.mockRejectedValue(new Error("Database connection failed"));
 
-        await expect(User.create('John Doe', 'john@example.com', 'password123', '123456789'))
-          .rejects.toThrow('Database error: Database connection failed');
+        await expect(
+          User.create(
+            "John Doe",
+            "john@example.com",
+            "password123",
+            "123456789",
+          ),
+        ).rejects.toThrow("Database error: Database connection failed");
       });
     });
 
-    describe('findByEmail', () => {
-      it('should find user by email', async () => {
+    describe("findByEmail", () => {
+      it("should find user by email", async () => {
         const mockUser = {
           id: 1,
-          name: 'John Doe',
-          email: 'john@example.com',
-          password: 'hashedPassword'
+          name: "John Doe",
+          email: "john@example.com",
+          password: "hashedPassword",
         };
 
         db.query.mockResolvedValue({ rows: [mockUser] });
 
-        const result = await User.findByEmail('john@example.com');
+        const result = await User.findByEmail("john@example.com");
 
         expect(db.query).toHaveBeenCalledWith(
-          'SELECT * FROM users WHERE email = $1',
-          ['john@example.com']
+          "SELECT * FROM users WHERE email = $1",
+          ["john@example.com"],
         );
         expect(result).toEqual(mockUser);
       });
 
-      it('should return null when user not found', async () => {
+      it("should return null when user not found", async () => {
         db.query.mockResolvedValue({ rows: [] });
 
-        const result = await User.findByEmail('notfound@example.com');
+        const result = await User.findByEmail("notfound@example.com");
 
         expect(result).toBeNull();
       });
     });
 
-    describe('findById', () => {
-      it('should find user by id', async () => {
+    describe("findById", () => {
+      it("should find user by id", async () => {
         const mockUser = {
           id: 1,
-          name: 'John Doe',
-          email: 'john@example.com',
-          h3: '123456789',
-          created_at: new Date()
+          name: "John Doe",
+          email: "john@example.com",
+          h3: "123456789",
+          created_at: new Date(),
         };
 
         db.query.mockResolvedValue({ rows: [mockUser] });
@@ -143,13 +156,13 @@ describe('User Model and Auth Controller', () => {
         const result = await User.findById(1);
 
         expect(db.query).toHaveBeenCalledWith(
-          'SELECT id, name, email, h3, created_at FROM users WHERE id = $1',
-          [1]
+          "SELECT id, name, email, h3, created_at FROM users WHERE id = $1",
+          [1],
         );
         expect(result).toEqual(mockUser);
       });
 
-      it('should return null when user not found', async () => {
+      it("should return null when user not found", async () => {
         db.query.mockResolvedValue({ rows: [] });
 
         const result = await User.findById(999);
@@ -158,137 +171,161 @@ describe('User Model and Auth Controller', () => {
       });
     });
 
-    describe('validatePassword', () => {
-      it('should validate correct password', async () => {
+    describe("validatePassword", () => {
+      it("should validate correct password", async () => {
         bcrypt.compare.mockResolvedValue(true);
 
-        const result = await User.validatePassword('password123', 'hashedPassword');
+        const result = await User.validatePassword(
+          "password123",
+          "hashedPassword",
+        );
 
-        expect(bcrypt.compare).toHaveBeenCalledWith('password123', 'hashedPassword');
+        expect(bcrypt.compare).toHaveBeenCalledWith(
+          "password123",
+          "hashedPassword",
+        );
         expect(result).toBe(true);
       });
 
-      it('should reject incorrect password', async () => {
+      it("should reject incorrect password", async () => {
         bcrypt.compare.mockResolvedValue(false);
 
-        const result = await User.validatePassword('wrongpassword', 'hashedPassword');
+        const result = await User.validatePassword(
+          "wrongpassword",
+          "hashedPassword",
+        );
 
         expect(result).toBe(false);
       });
     });
 
-    describe('postcodeToH3', () => {
-      it('should convert valid postcode to H3 index', async () => {
+    describe("postcodeToH3", () => {
+      it("should convert valid postcode to H3 index", async () => {
         const mockApiResponse = {
           result: {
             latitude: 51.5074,
-            longitude: -0.1278
-          }
+            longitude: -0.1278,
+          },
         };
 
         global.fetch.mockResolvedValue({
           ok: true,
           status: 200,
-          json: () => Promise.resolve(mockApiResponse)
+          json: () => Promise.resolve(mockApiResponse),
         });
 
-        geoToH3.mockReturnValue('123456789');
+        geoToH3.mockReturnValue("123456789");
 
-        const result = await User.postcodeToH3('SW1A 1AA');
+        const result = await User.postcodeToH3("SW1A 1AA");
 
         expect(global.fetch).toHaveBeenCalledWith(
-          'https://api.postcodes.io/postcodes/SW1A%201AA',
+          "https://api.postcodes.io/postcodes/SW1A%201AA",
           expect.objectContaining({
-            headers: { 'User-Agent': 'StreetSafe-App/1.0' }
-          })
+            headers: { "User-Agent": "StreetSafe-App/1.0" },
+          }),
         );
         expect(geoToH3).toHaveBeenCalledWith(51.5074, -0.1278, 9);
-        expect(result).toBe('123456789');
+        expect(result).toBe("123456789");
       });
 
-      it('should throw error for invalid postcode', async () => {
+      it("should throw error for invalid postcode", async () => {
         global.fetch.mockResolvedValue({
           ok: false,
           status: 404,
-          text: () => Promise.resolve('Postcode not found')
+          text: () => Promise.resolve("Postcode not found"),
         });
 
-        await expect(User.postcodeToH3('INVALID'))
-          .rejects.toThrow('Error converting postcode to H3: Invalid postcode: 404 - Postcode not found');
+        await expect(User.postcodeToH3("INVALID")).rejects.toThrow(
+          "Error converting postcode to H3: Invalid postcode: 404 - Postcode not found",
+        );
       });
 
-      it('should throw error when API is unavailable', async () => {
-        global.fetch.mockRejectedValue(new Error('Network error'));
+      it("should throw error when API is unavailable", async () => {
+        global.fetch.mockRejectedValue(new Error("Network error"));
 
-        await expect(User.postcodeToH3('SW1A 1AA'))
-          .rejects.toThrow('Error converting postcode to H3: Network error');
+        await expect(User.postcodeToH3("SW1A 1AA")).rejects.toThrow(
+          "Error converting postcode to H3: Network error",
+        );
       });
 
-      it('should throw error when no result returned', async () => {
+      it("should throw error when no result returned", async () => {
         global.fetch.mockResolvedValue({
           ok: true,
-          json: () => Promise.resolve({})
+          json: () => Promise.resolve({}),
         });
 
-        await expect(User.postcodeToH3('SW1A 1AA'))
-          .rejects.toThrow('Error converting postcode to H3: Postcode not found');
+        await expect(User.postcodeToH3("SW1A 1AA")).rejects.toThrow(
+          "Error converting postcode to H3: Postcode not found",
+        );
       });
     });
   });
 
-  describe('AuthController Tests', () => {
-    describe('register', () => {
-      it('should register a new user successfully', async () => {
+  describe("AuthController Tests", () => {
+    describe("register", () => {
+      it("should register a new user successfully", async () => {
         req.body = {
-          name: 'John Doe',
-          email: 'john@example.com',
-          password: 'password123',
-          postcode: 'SW1A 1AA'
+          name: "John Doe",
+          email: "john@example.com",
+          password: "password123",
+          postcode: "SW1A 1AA",
         };
 
         const mockUser = {
           id: 1,
-          name: 'John Doe',
-          email: 'john@example.com',
-          h3: '123456789'
+          name: "John Doe",
+          email: "john@example.com",
+          h3: "123456789",
         };
 
         User.findByEmail = jest.fn().mockResolvedValue(null);
-        User.postcodeToH3 = jest.fn().mockResolvedValue('123456789');
+        User.postcodeToH3 = jest.fn().mockResolvedValue("123456789");
         User.create = jest.fn().mockResolvedValue(mockUser);
-        jwt.sign.mockReturnValue('mockToken');
+        jwt.sign.mockReturnValue("mockToken");
 
         await invokeController(() => AuthController.register(req, res));
 
-        expect(User.findByEmail).toHaveBeenCalledWith('john@example.com');
-        expect(User.postcodeToH3).toHaveBeenCalledWith('SW1A 1AA');
-        expect(User.create).toHaveBeenCalledWith('John Doe', 'john@example.com', 'password123', '123456789');
-        expect(res.cookie).toHaveBeenCalledWith('auth_token', 'mockToken', expect.any(Object));
+        expect(User.findByEmail).toHaveBeenCalledWith("john@example.com");
+        expect(User.postcodeToH3).toHaveBeenCalledWith("SW1A 1AA");
+        expect(User.create).toHaveBeenCalledWith(
+          "John Doe",
+          "john@example.com",
+          "password123",
+          "123456789",
+        );
+        expect(
+          require("../utils/emailService").sendRegistrationConfirmation,
+        ).toHaveBeenCalledWith(mockUser);
+        expect(res.cookie).toHaveBeenCalledWith(
+          "auth_token",
+          "mockToken",
+          expect.any(Object),
+        );
         expect(res.status).toHaveBeenCalledWith(201);
         expect(res.json).toHaveBeenCalledWith({
           message: "User registered successfully",
-          user: mockUser
+          user: mockUser,
         });
       });
 
-      it('should return error for missing fields', async () => {
-        req.body = { name: 'John Doe' };
+      it("should return error for missing fields", async () => {
+        req.body = { name: "John Doe" };
 
         await invokeController(() => AuthController.register(req, res));
 
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
           error: "All fields are required",
-          message: "All fields are required"
+          message: "All fields are required",
         });
       });
 
-      it('should return error for short password', async () => {
+      it("should return error for short password", async () => {
         req.body = {
-          name: 'John Doe',
-          email: 'john@example.com',
-          password: '123',
-          postcode: 'SW1A 1AA'
+          name: "John Doe",
+          email: "john@example.com",
+          password: "123",
+          postcode: "SW1A 1AA",
         };
 
         await invokeController(() => AuthController.register(req, res));
@@ -296,39 +333,43 @@ describe('User Model and Auth Controller', () => {
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
           error: "Password must be at least 8 characters long",
-          message: "Password must be at least 8 characters long"
+          message: "Password must be at least 8 characters long",
         });
       });
 
-      it('should return error for existing user', async () => {
+      it("should return error for existing user", async () => {
         req.body = {
-          name: 'John Doe',
-          email: 'existing@example.com',
-          password: 'password123',
-          postcode: 'SW1A 1AA'
+          name: "John Doe",
+          email: "existing@example.com",
+          password: "password123",
+          postcode: "SW1A 1AA",
         };
 
-        User.findByEmail = jest.fn().mockResolvedValue({ email: 'existing@example.com' });
+        User.findByEmail = jest
+          .fn()
+          .mockResolvedValue({ email: "existing@example.com" });
 
         await invokeController(() => AuthController.register(req, res));
 
         expect(res.status).toHaveBeenCalledWith(409);
         expect(res.json).toHaveBeenCalledWith({
           error: "User with this email already exists",
-          message: "User with this email already exists"
+          message: "User with this email already exists",
         });
       });
 
-      it('should handle postcode conversion errors', async () => {
+      it("should handle postcode conversion errors", async () => {
         req.body = {
-          name: 'John Doe',
-          email: 'john@example.com',
-          password: 'password123',
-          postcode: 'INVALID'
+          name: "John Doe",
+          email: "john@example.com",
+          password: "password123",
+          postcode: "INVALID",
         };
 
         User.findByEmail = jest.fn().mockResolvedValue(null);
-        User.postcodeToH3 = jest.fn().mockRejectedValue(new Error('Invalid postcode'));
+        User.postcodeToH3 = jest
+          .fn()
+          .mockRejectedValue(new Error("Invalid postcode"));
 
         await invokeController(() => AuthController.register(req, res));
 
@@ -337,23 +378,25 @@ describe('User Model and Auth Controller', () => {
           error: "Invalid postcode",
           message: "Invalid postcode",
           details: {
-            postcode: 'INVALID',
-            reason: 'Invalid postcode'
-          }
+            postcode: "INVALID",
+            reason: "Invalid postcode",
+          },
         });
       });
 
-      it('should return a clearer error when user creation fails', async () => {
+      it("should return a clearer error when user creation fails", async () => {
         req.body = {
-          name: 'John Doe',
-          email: 'john@example.com',
-          password: 'password123',
-          postcode: 'SW1A 1AA'
+          name: "John Doe",
+          email: "john@example.com",
+          password: "password123",
+          postcode: "SW1A 1AA",
         };
 
         User.findByEmail = jest.fn().mockResolvedValue(null);
-        User.postcodeToH3 = jest.fn().mockResolvedValue('123456789');
-        User.create = jest.fn().mockRejectedValue(new Error('Database connection failed'));
+        User.postcodeToH3 = jest.fn().mockResolvedValue("123456789");
+        User.create = jest
+          .fn()
+          .mockRejectedValue(new Error("Database connection failed"));
 
         await invokeController(() => AuthController.register(req, res));
 
@@ -362,64 +405,71 @@ describe('User Model and Auth Controller', () => {
           error: "Registration failed",
           message: "Unable to create user account",
           details: {
-            email: 'john@example.com',
-            reason: 'Database connection failed'
-          }
+            email: "john@example.com",
+            reason: "Database connection failed",
+          },
         });
       });
     });
 
-    describe('login', () => {
-      it('should login user successfully', async () => {
+    describe("login", () => {
+      it("should login user successfully", async () => {
         req.body = {
-          email: 'john@example.com',
-          password: 'password123'
+          email: "john@example.com",
+          password: "password123",
         };
 
         const mockUser = {
           id: 1,
-          name: 'John Doe',
-          email: 'john@example.com',
-          password: 'hashedPassword',
-          h3: '123456789'
+          name: "John Doe",
+          email: "john@example.com",
+          password: "hashedPassword",
+          h3: "123456789",
         };
 
         User.findByEmail = jest.fn().mockResolvedValue(mockUser);
         User.validatePassword = jest.fn().mockResolvedValue(true);
-        jwt.sign.mockReturnValue('mockToken');
+        jwt.sign.mockReturnValue("mockToken");
 
         await invokeController(() => AuthController.login(req, res));
 
-        expect(User.findByEmail).toHaveBeenCalledWith('john@example.com');
-        expect(User.validatePassword).toHaveBeenCalledWith('password123', 'hashedPassword');
-        expect(res.cookie).toHaveBeenCalledWith('auth_token', 'mockToken', expect.any(Object));
+        expect(User.findByEmail).toHaveBeenCalledWith("john@example.com");
+        expect(User.validatePassword).toHaveBeenCalledWith(
+          "password123",
+          "hashedPassword",
+        );
+        expect(res.cookie).toHaveBeenCalledWith(
+          "auth_token",
+          "mockToken",
+          expect.any(Object),
+        );
         expect(res.json).toHaveBeenCalledWith({
           message: "Login successful",
           user: {
             id: mockUser.id,
             name: mockUser.name,
             email: mockUser.email,
-            h3: mockUser.h3
-          }
+            h3: mockUser.h3,
+          },
         });
       });
 
-      it('should return error for missing credentials', async () => {
-        req.body = { email: 'john@example.com' };
+      it("should return error for missing credentials", async () => {
+        req.body = { email: "john@example.com" };
 
         await invokeController(() => AuthController.login(req, res));
 
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
           error: "Email and password are required",
-          message: "Email and password are required"
+          message: "Email and password are required",
         });
       });
 
-      it('should return error for non-existent user', async () => {
+      it("should return error for non-existent user", async () => {
         req.body = {
-          email: 'nonexistent@example.com',
-          password: 'password123'
+          email: "nonexistent@example.com",
+          password: "password123",
         };
 
         User.findByEmail = jest.fn().mockResolvedValue(null);
@@ -429,20 +479,20 @@ describe('User Model and Auth Controller', () => {
         expect(res.status).toHaveBeenCalledWith(401);
         expect(res.json).toHaveBeenCalledWith({
           error: "Invalid credentials",
-          message: "Invalid credentials"
+          message: "Invalid credentials",
         });
       });
 
-      it('should return error for invalid password', async () => {
+      it("should return error for invalid password", async () => {
         req.body = {
-          email: 'john@example.com',
-          password: 'wrongpassword'
+          email: "john@example.com",
+          password: "wrongpassword",
         };
 
         const mockUser = {
           id: 1,
-          email: 'john@example.com',
-          password: 'hashedPassword'
+          email: "john@example.com",
+          password: "hashedPassword",
         };
 
         User.findByEmail = jest.fn().mockResolvedValue(mockUser);
@@ -453,28 +503,31 @@ describe('User Model and Auth Controller', () => {
         expect(res.status).toHaveBeenCalledWith(401);
         expect(res.json).toHaveBeenCalledWith({
           error: "Invalid credentials",
-          message: "Invalid credentials"
+          message: "Invalid credentials",
         });
       });
     });
 
-    describe('logout', () => {
-      it('should logout user successfully', async () => {
+    describe("logout", () => {
+      it("should logout user successfully", async () => {
         await invokeController(() => AuthController.logout(req, res));
 
-        expect(res.clearCookie).toHaveBeenCalledWith('auth_token', expect.any(Object));
+        expect(res.clearCookie).toHaveBeenCalledWith(
+          "auth_token",
+          expect.any(Object),
+        );
         expect(res.json).toHaveBeenCalledWith({ message: "Logout successful" });
       });
     });
 
-    describe('getProfile', () => {
-      it('should get user profile successfully', async () => {
+    describe("getProfile", () => {
+      it("should get user profile successfully", async () => {
         req.userId = 1;
         const mockUser = {
           id: 1,
-          name: 'John Doe',
-          email: 'john@example.com',
-          h3: '123456789'
+          name: "John Doe",
+          email: "john@example.com",
+          h3: "123456789",
         };
 
         User.findById = jest.fn().mockResolvedValue(mockUser);
@@ -485,7 +538,7 @@ describe('User Model and Auth Controller', () => {
         expect(res.json).toHaveBeenCalledWith({ user: mockUser });
       });
 
-      it('should return error when user not found', async () => {
+      it("should return error when user not found", async () => {
         req.userId = 999;
 
         User.findById = jest.fn().mockResolvedValue(null);
@@ -495,20 +548,22 @@ describe('User Model and Auth Controller', () => {
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({
           error: "User not found",
-          message: "User not found"
+          message: "User not found",
         });
       });
 
-      it('should handle database errors', async () => {
+      it("should handle database errors", async () => {
         req.userId = 1;
 
-        User.findById = jest.fn().mockRejectedValue(new Error('Database error'));
+        User.findById = jest
+          .fn()
+          .mockRejectedValue(new Error("Database error"));
 
         await invokeController(() => AuthController.getProfile(req, res));
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
-          message: "Internal server error"
+          message: "Internal server error",
         });
       });
     });
