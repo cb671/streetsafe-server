@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const User = require("../model/userModel");
 const jwt = require("jsonwebtoken");
 const { getCookieOptions } = require("../config/security");
@@ -49,8 +50,26 @@ class AuthController {
     }
 
     let user;
+    let confirmationToken;
+
     try {
-      user = await User.create(name, email, password, h3Index);
+      confirmationToken = crypto.randomBytes(32).toString("hex");
+
+      const confirmationTokenHash = crypto
+        .createHash("sha256")
+        .update(confirmationToken)
+        .digest("hex");
+
+      const confirmationExpiresat = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
+
+      user = await User.create(
+        name,
+        email,
+        password,
+        h3Index,
+        confirmationTokenHash,
+        confirmationExpiresat,
+      );
     } catch (error) {
       if (error.statusCode) {
         throw error;
@@ -67,16 +86,9 @@ class AuthController {
     }
 
     try {
-      await EmailService.sendRegistrationConfirmation(user);
+      await EmailService.sendRegistrationConfirmation(user, confirmationToken);
     } catch (error) {
-      throw createHttpError(500, "Unable to send confirmation email", {
-        expose: true,
-        error: "Email sending failed",
-        details: {
-          email: user.email,
-          reason: error.message,
-        },
-      });
+      console.error("Registration email failed:", error.message);
     }
 
     const token = jwt.sign(
@@ -102,6 +114,28 @@ class AuthController {
     });
   }
 
+  static async confirmEmail(req, res) {
+    const { token } = req.query;
+
+    if (!token || typeof token !== "string") {
+      throw createHttpError(400, "Confirmation token is required", {
+        error: "Confirmation token is required",
+      });
+    }
+
+    const user = await User.confirmationEmail(token);
+
+    if (!user) {
+      throw createHttpError(400, "Confirmation link is invalid or expired", {
+        error: "Confirmation link is invalid or expired",
+      });
+    }
+
+    res.json({
+      message: "Email confirmed successfully",
+    });
+  }
+
   static async login(req, res) {
     const { email, password } = req.body;
 
@@ -122,10 +156,21 @@ class AuthController {
       password,
       user.password,
     );
+
     if (!isValidPassword) {
       throw createHttpError(401, "Invalid credentials", {
         error: "Invalid credentials",
       });
+    }
+
+    if (!user.email_verified_at) {
+      throw createHttpError(
+        403,
+        "Please confirm your email before logging in",
+        {
+          error: "Email address has not been confirmed",
+        },
+      );
     }
 
     const token = jwt.sign(

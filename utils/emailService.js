@@ -1,41 +1,59 @@
-const nodemailer = require("nodemailer");
+const BREVO_EMAIL_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
 
-const getTransporter = () => {
-  const host = process.env.EMAIL_HOST;
-  const port = parseInt(process.env.EMAIL_PORT, 10);
-  const secure = process.env.EMAIL_SECURE === "true";
-  const authUser = process.env.EMAIL_USER;
-  const authPass = process.env.EMAIL_PASS;
+const getEmailConfig = () => {
+  const apiKey = process.env.BREVO_API_KEY;
+  const templateId = Number.parseInt(
+    process.env.BREVO_CONFIRMATION_TEMPLATE_ID,
+    10,
+  );
+  const confirmationUrl = process.env.EMAIL_CONFIRMATION_URL;
 
-  if (!host || Number.isNaN(port) || !authUser || !authPass) {
+  if (!apiKey || !Number.isInteger(templateId) || !confirmationUrl) {
     throw new Error(
-      "Email transport is not configured. Set EMAIL_HOST, EMAIL_PORT, EMAIL_USER, and EMAIL_PASS.",
+      "Brevo email is not configured. Set BREVO_API_KEY, BREVO_CONFIRMATION_TEMPLATE_ID, and EMAIL_CONFIRMATION_URL.",
     );
   }
 
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure,
-    auth: {
-      user: authUser,
-      pass: authPass,
-    },
-  });
+  try {
+    new URL(confirmationUrl);
+  } catch {
+    throw new Error("EMAIL_CONFIRMATION_URL must be an absolute URL.");
+  }
+
+  return { apiKey, templateId, confirmationUrl };
 };
 
-const sendRegistrationConfirmation = async (user) => {
-  const transporter = getTransporter();
+const sendRegistrationConfirmation = async (user, token) => {
+  const { apiKey, templateId, confirmationUrl } = getEmailConfig();
 
-  const message = {
-    from: process.env.EMAIL_FROM || `StreetSafe <${process.env.EMAIL_USER}>`,
-    to: user.email,
-    subject: "Welcome to StreetSafe",
-    text: `Hi ${user.name},\n\nThanks for signing up to StreetSafe! Your account has been created successfully.\n\nIf you have any questions, reply to info@dominic-simpson.co.uk\n\nStay safe,\nStreetSafe Team`,
-    html: `<p>Hi ${user.name},</p><p>Thanks for signing up to <strong>StreetSafe</strong>! Your account has been created successfully.</p><p>If you have any questions, reply to info@dominic-simpson.co.uk</p><p>Stay safe,<br/>StreetSafe Team</p>`,
-  };
+  const url = new URL(confirmationUrl);
+  url.searchParams.set("token", token);
+  const confirmationUrlWithToken = url.toString();
 
-  await transporter.sendMail(message);
+  const firstName = user.name.trim().split(/\s+/)[0];
+  const response = await fetch(BREVO_EMAIL_ENDPOINT, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "api-key": apiKey,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      to: [{ email: user.email, name: user.name }],
+      templateId,
+      params: {
+        firstName,
+        confirmationUrl: url.toString(),
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    const details = await response.text();
+    throw new Error(
+      `Brevo rejected the confirmation email (${response.status}): ${details}`,
+    );
+  }
 };
 
 module.exports = {

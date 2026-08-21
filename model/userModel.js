@@ -1,17 +1,43 @@
 const db = require("../database/connect");
 const bcrypt = require("bcrypt");
 const { geoToH3 } = require("h3-js");
+const crypto = require("crypto");
 
 class User {
-  static async create(name, email, password, h3) {
+  static async create(
+    name,
+    email,
+    password,
+    h3,
+    emailConfirmationTokenHash,
+    emailConfirmationExpiresAt,
+  ) {
     try {
       const hashedPassword = await bcrypt.hash(password, 12);
+
       const query = `
-        INSERT INTO users (name, email, password, h3)
-        VALUES ($1, $2, $3, $4)
-        RETURNING id, name, email, h3, created_at
+        INSERT INTO users (
+          name, 
+          email, 
+          password, 
+          h3,
+          email_confirmation_token_hash,
+          email_confirmation_expires_at
+        )
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING id, name, email, h3, email_verified_at, created_at
       `;
-      const values = [name, email, hashedPassword, h3];
+
+      // Normalize the email before saving it
+      const values = [
+        name,
+        email.trim().toLowerCase(),
+        hashedPassword,
+        h3,
+        emailConfirmationTokenHash,
+        emailConfirmationExpiresAt,
+      ];
+
       const { rows } = await db.query(query, values);
       return rows[0];
     } catch (error) {
@@ -21,8 +47,13 @@ class User {
 
   static async findByEmail(email) {
     try {
-      const query = `SELECT * FROM users WHERE email = $1`;
-      const { rows } = await db.query(query, [email]);
+      const normalizedEmail = email.trim().toLowerCase();
+      const query = `
+        SELECT * 
+        FROM users 
+        WHERE LOWER(TRIM(email)) = $1
+      `;
+      const { rows } = await db.query(query, [normalizedEmail]);
       return rows[0] || null;
     } catch (error) {
       throw new Error(`Database error: ${error.message}`);
@@ -31,8 +62,28 @@ class User {
 
   static async findById(id) {
     try {
-      const query = `SELECT id, name, email, h3, created_at FROM users WHERE id = $1`;
+      const query = `
+        SELECT id, name, email, h3, created_at FROM users WHERE id = $1`;
       const { rows } = await db.query(query, [id]);
+      return rows[0] || null;
+    } catch (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+  }
+
+  static async confirmationEmail(token) {
+    try {
+      const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+      const query = `
+        UPDATE users
+        SET email_verified_at = COALESCE(email_verified_at, NOW())
+        WHERE email_confirmation_token_hash = $1
+          AND email_confirmation_expires_at > NOW()
+        RETURNING id, name, email, email_verified_at
+      `;
+
+      const { rows } = await db.query(query, [tokenHash]);
       return rows[0] || null;
     } catch (error) {
       throw new Error(`Database error: ${error.message}`);
@@ -46,18 +97,18 @@ class User {
   static async postcodeToH3(postcode) {
     try {
       console.log(`Converting postcode: "${postcode}"`);
-      
+
       const response = await fetch(
         `https://api.postcodes.io/postcodes/${encodeURIComponent(postcode)}`,
         {
           headers: {
-            'User-Agent': 'StreetSafe-App/1.0'
-          }
-        }
+            "User-Agent": "StreetSafe-App/1.0",
+          },
+        },
       );
 
       console.log(`API Response status: ${response.status}`);
-      
+
       if (!response.ok) {
         const errorText = await response.text();
         console.log(`API Error response: ${errorText}`);
@@ -66,15 +117,14 @@ class User {
 
       const data = await response.json();
       console.log(`API Response data:`, data);
-      
+
       if (!data.result) {
-        throw new Error('Postcode not found');
+        throw new Error("Postcode not found");
       }
 
       const { latitude, longitude } = data.result;
       console.log(`Coordinates: lat=${latitude}, lng=${longitude}`);
-      
-      
+
       const h3Index = geoToH3(latitude, longitude, 9);
       console.log(`H3 index: ${h3Index}`);
       return h3Index;

@@ -11,7 +11,10 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     h3 VARCHAR(15) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now()
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    email_verified_at TIMESTAMP,
+    email_confirmation_token_hash VARCHAR(64),
+    email_confirmation_expires_at TIMESTAMP
 );
 
 CREATE TABLE emergency_services (
