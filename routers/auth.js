@@ -18,6 +18,11 @@ router.get(
   authRateLimit,
   asyncHandler(authController.confirmEmail),
 );
+router.post(
+  "/resend-confirmation",
+  authRateLimit,
+  asyncHandler(authController.resendConfirmation),
+);
 router.post("/login", authRateLimit, asyncHandler(authController.login));
 router.post("/logout", asyncHandler(authController.logout));
 router.get(

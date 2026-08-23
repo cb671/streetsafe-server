@@ -63,7 +63,17 @@ class User {
   static async findById(id) {
     try {
       const query = `
-        SELECT id, name, email, h3, created_at FROM users WHERE id = $1`;
+        SELECT 
+          id, 
+          name, 
+          email, 
+          h3, 
+          email_verified_at,
+          created_at 
+        FROM users 
+        WHERE id = $1
+      `;
+
       const { rows } = await db.query(query, [id]);
       return rows[0] || null;
     } catch (error) {
@@ -77,7 +87,10 @@ class User {
 
       const query = `
         UPDATE users
-        SET email_verified_at = COALESCE(email_verified_at, NOW())
+        SET 
+          email_verified_at = COALESCE(email_verified_at, NOW()),
+          email_confirmation_token_hash = NULL,
+          email_confirmation_expires_at = NULL
         WHERE email_confirmation_token_hash = $1
           AND email_confirmation_expires_at > NOW()
         RETURNING id, name, email, email_verified_at
@@ -90,16 +103,58 @@ class User {
     }
   }
 
+  static async updateConfirmationToken(
+    userId,
+    confirmationTokenHash,
+    confirmationExpiresAt,
+  ) {
+    try {
+      const query = `
+        UPDATE users
+        SET
+          email_confirmation_token_hash = $2,
+          email_confirmation_expires_at = $3
+        WHERE id = $1
+          AND email_verified_at IS NULL
+        RETURNING id, name, email
+      `;
+
+      const values = [userId, confirmationTokenHash, confirmationExpiresAt];
+
+      const { rows } = await db.query(query, values);
+      return rows[0] || null;
+    } catch (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+  }
+
   static async validatePassword(plainPassword, hashedPassword) {
     return await bcrypt.compare(plainPassword, hashedPassword);
   }
 
   static async postcodeToH3(postcode) {
     try {
-      console.log(`Converting postcode: "${postcode}"`);
+      if (typeof postcode !== "string") {
+        throw new Error("Postcode must be a string");
+      }
+
+      const normalizedPostcode = postcode.trim().toUpperCase();
+      const outwardCodePattern = /^[A-Z]{1,2}\d[A-Z\d]?$/;
+      const fullPostcodePattern = /^(?:GIR\s?0AA|[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2})$/;
+      const isOutwardCode = outwardCodePattern.test(normalizedPostcode);
+
+      if (!isOutwardCode && !fullPostcodePattern.test(normalizedPostcode)) {
+        throw new Error(
+          "Enter a valid UK outward code or full postcode",
+        );
+      }
+
+      const postcodePath = isOutwardCode ? "outcodes" : "postcodes";
+
+      console.log(`Converting postcode: "${normalizedPostcode}"`);
 
       const response = await fetch(
-        `https://api.postcodes.io/postcodes/${encodeURIComponent(postcode)}`,
+        `https://api.postcodes.io/${postcodePath}/${encodeURIComponent(normalizedPostcode)}`,
         {
           headers: {
             "User-Agent": "StreetSafe-App/1.0",

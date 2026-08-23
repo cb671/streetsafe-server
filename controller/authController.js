@@ -85,26 +85,22 @@ class AuthController {
       });
     }
 
+    let confirmationEmailSent = true;
+
     try {
       await EmailService.sendRegistrationConfirmation(user, confirmationToken);
     } catch (error) {
+      confirmationEmailSent = false;
       console.error("Registration email failed:", error.message);
     }
 
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" },
-    );
-
-    res.cookie(
-      "auth_token",
-      token,
-      getCookieOptions(req, 7 * 24 * 60 * 60 * 1000),
-    );
-
     res.status(201).json({
-      message: "User registered successfully",
+      message: confirmationEmailSent
+        ? "Registration successful. Please check your email to confirm your account."
+        : "Registration successful, but the confirmation email could not be sent. Please request another confirmation email.",
+
+      requiresEmailConfirmation: true,
+      confirmationEmailSent,
       user: {
         id: user.id,
         name: user.name,
@@ -133,6 +129,69 @@ class AuthController {
 
     res.json({
       message: "Email confirmed successfully",
+    });
+  }
+
+  static async resendConfirmation(req, res) {
+    const { email } = req.body;
+
+    if (!email || typeof email !== "string" || !email.trim()) {
+      throw createHttpError(400, "Email is required", {
+        error: "Email is required",
+      });
+    }
+
+    const user = await User.findByEmail(email);
+
+    const genericMessage =
+      "If an unconfirmed account exists for this email, a new confirmation email has been sent.";
+
+    // Do not reveal whether an email address is registered or already verified.
+    if (!user || user.email_verified_at) {
+      return res.json({
+        message: genericMessage,
+      });
+    }
+
+    const confirmationToken = crypto.randomBytes(32).toString("hex");
+
+    const confirmationTokenHash = crypto
+      .createHash("sha256")
+      .update(confirmationToken)
+      .digest("hex");
+
+    const confirmationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    const updatedUser = await User.updateConfirmationToken(
+      user.id,
+      confirmationTokenHash,
+      confirmationExpiresAt,
+    );
+
+    // The account could have been confirmed between the initial lookup
+    // and the database update.
+    if (!updatedUser) {
+      return res.json({
+        message: genericMessage,
+      });
+    }
+
+    try {
+      await EmailService.sendRegistrationConfirmation(
+        updatedUser,
+        confirmationToken,
+      );
+    } catch (error) {
+      console.error("Confirmation email resend failed:", error.message);
+
+      throw createHttpError(502, "Unable to send confirmation email", {
+        expose: true,
+        error: "Email sending failed",
+      });
+    }
+
+    return res.json({
+      message: genericMessage,
     });
   }
 

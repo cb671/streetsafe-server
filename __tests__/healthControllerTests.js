@@ -17,7 +17,10 @@ describe("health controller", () => {
       DB_URL: "postgres://example",
       JWT_SECRET: "secret",
       VALHALLA_URL: "http://localhost:8002",
-      MAPS_API_KEY: "maps-key"
+      MAPS_API_KEY: "maps-key",
+      BREVO_API_KEY: "brevo-key",
+      BREVO_CONFIRMATION_TEMPLATE_ID: "42",
+      EMAIL_CONFIRMATION_URL: "https://example.com/confirm-email"
     };
     global.fetch = jest.fn();
     res = {

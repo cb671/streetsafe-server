@@ -19,10 +19,13 @@ describe("emailService", () => {
   });
 
   it("sends the active Brevo template with its expected parameters", async () => {
-    await sendRegistrationConfirmation({
-      name: "John Doe",
-      email: "john@example.com",
-    });
+    await sendRegistrationConfirmation(
+      {
+        name: "John Doe",
+        email: "john@example.com",
+      },
+      "confirmation-token",
+    );
 
     expect(fetch).toHaveBeenCalledWith(
       "https://api.brevo.com/v3/smtp/email",
@@ -34,7 +37,8 @@ describe("emailService", () => {
           templateId: 42,
           params: {
             firstName: "John",
-            confirmationUrl: "https://example.com/confirm-email",
+            confirmationUrl:
+              "https://example.com/confirm-email?token=confirmation-token",
           },
         }),
       }),
@@ -49,10 +53,13 @@ describe("emailService", () => {
     });
 
     await expect(
-      sendRegistrationConfirmation({
-        name: "John Doe",
-        email: "john@example.com",
-      }),
+      sendRegistrationConfirmation(
+        {
+          name: "John Doe",
+          email: "john@example.com",
+        },
+        "confirmation-token",
+      ),
     ).rejects.toThrow("Brevo rejected the confirmation email (400)");
   });
 });
