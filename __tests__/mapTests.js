@@ -459,7 +459,11 @@ describe('Map Model and Controller', () => {
           }
         ];
 
-        const spy = jest.spyOn(Crime, 'getLocationNameFromH3').mockResolvedValue('London');
+        const spy = jest.spyOn(Crime, 'getLocationDetailsFromH3').mockResolvedValue({
+          name: 'London',
+          displayName: 'London · 123456789',
+          coordinates: { latitude: 51.5074, longitude: -0.1278 }
+        });
 
         const result = await Crime.formatCrimeDataWithLocation(rawData);
         
@@ -468,6 +472,8 @@ describe('Map Model and Controller', () => {
           {
             h3: '123456789',
             name: 'London',
+            displayName: 'London · 123456789',
+            coordinates: { latitude: 51.5074, longitude: -0.1278 },
             crimes: [10, 5, 2, 3, 7, 1, 4, 8, 6, 2, 5]
           }
         ]);
@@ -507,15 +513,25 @@ describe('Map Model and Controller', () => {
           }
         ];
 
-        const spy = jest.spyOn(Crime, 'getLocationNameFromH3')
-          .mockResolvedValueOnce('London')
-          .mockResolvedValueOnce('Manchester');
+        const spy = jest.spyOn(Crime, 'getLocationDetailsFromH3')
+          .mockResolvedValueOnce({
+            name: 'London',
+            displayName: 'London · 123456789',
+            coordinates: { latitude: 51.5074, longitude: -0.1278 }
+          })
+          .mockResolvedValueOnce({
+            name: 'Manchester',
+            displayName: 'Manchester · 987654321',
+            coordinates: { latitude: 53.4808, longitude: -2.2426 }
+          });
 
         const result = await Crime.formatCrimeDataWithLocation(rawData);
         
         expect(result).toHaveLength(2);
         expect(result[0].name).toBe('London');
         expect(result[1].name).toBe('Manchester');
+        expect(result[0].displayName).toBe('London · 123456789');
+        expect(result[1].coordinates).toEqual({ latitude: 53.4808, longitude: -2.2426 });
 
         spy.mockRestore();
       });

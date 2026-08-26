@@ -41,14 +41,18 @@ class Crime {
 
   static async getCrimeDataBySpecificH3(h3Index, startDate, endDate) {
     try {
-      console.log('getCrimeDataBySpecificH3 called with:', { h3Index, startDate, endDate }); 
-      
+      console.log("getCrimeDataBySpecificH3 called with:", {
+        h3Index,
+        startDate,
+        endDate,
+      });
+
       const endDateValue = endDate || new Date();
 
       //check if h3Index is a hex string  or a BIGINT
       const isHexString = /[a-fA-F]/.test(h3Index.toString());
       let query;
-      
+
       if (isHexString) {
         query = `
           SELECT
@@ -72,7 +76,7 @@ class Crime {
           GROUP BY h3_low_res;
         `;
       } else {
-        //BIGINT format 
+        //BIGINT format
         query = `
           SELECT
             h3_low_res,
@@ -95,30 +99,38 @@ class Crime {
           GROUP BY h3_low_res;
         `;
       }
-      
-      console.log('Query:', query);
-      console.log('Values:', [h3Index, startDate.toUTCString(), endDateValue.toUTCString()]);
-      
-      const values = [h3Index, startDate.toUTCString(), endDateValue.toUTCString()];
+
+      console.log("Query:", query);
+      console.log("Values:", [
+        h3Index,
+        startDate.toUTCString(),
+        endDateValue.toUTCString(),
+      ]);
+
+      const values = [
+        h3Index,
+        startDate.toUTCString(),
+        endDateValue.toUTCString(),
+      ];
       const { rows } = await db.query(query, values);
-      
-      console.log('Query result rows:', rows); 
-      console.log('Returning:', rows[0] || null); 
-      
+
+      console.log("Query result rows:", rows);
+      console.log("Returning:", rows[0] || null);
+
       return rows[0] || null;
     } catch (error) {
-      console.error('getCrimeDataBySpecificH3 error:', error); 
+      console.error("getCrimeDataBySpecificH3 error:", error);
       throw new Error(`Database error: ${error.message}`);
     }
   }
 
-  static async getLocationNameFromH3(h3Index) {
+  static async getLocationDetailsFromH3(h3Index) {
     try {
       let query;
       let queryParams;
-      
+
       const isHexString = /[a-fA-F]/.test(h3Index.toString());
-      
+
       if (isHexString) {
         query = `SELECT h3_cell_to_lat_lng($1::h3index) as coords`;
         queryParams = [h3Index];
@@ -126,29 +138,54 @@ class Crime {
         query = `SELECT h3_cell_to_lat_lng($1::bigint::h3index) as coords`;
         queryParams = [h3Index];
       }
-      
+
       const { rows } = await db.query(query, queryParams);
 
-      if (rows.length === 0) return "Unknown Location";
+      if (rows.length === 0) {
+        return {
+          name: "Unknown Location",
+          displayName: `Unknown Location · ${h3Index}`,
+          coordinates: null,
+        };
+      }
 
       const lat = rows[0].coords.y;
       const lng = rows[0].coords.x;
 
-      if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
-        console.error('Invalid coordinates:', { lat, lng });
-        return "Unknown Location";
+      if (
+        lat === null ||
+        lat === undefined ||
+        lng === null ||
+        lng === undefined ||
+        !Number.isFinite(Number(lat)) ||
+        !Number.isFinite(Number(lng))
+      ) {
+        console.error("Invalid coordinates:", { lat, lng });
+        return {
+          name: "Unknown Location",
+          displayName: `Unknown Location · ${h3Index}`,
+          coordinates: null,
+        };
       }
 
+      const coordinates = { latitude: lat, longitude: lng };
+
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`,
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=15&addressdetails=1`,
         {
           headers: {
-            'User-Agent': 'StreetSafe-App/1.0'
-          }
-        }
+            "User-Agent": "StreetSafe-App/1.0",
+          },
+        },
       );
 
-      if (!response.ok) return "Unknown Location";
+      if (!response.ok) {
+        return {
+          name: "Unknown Location",
+          displayName: `Unknown Location · ${h3Index}`,
+          coordinates,
+        };
+      }
 
       const data = await response.json();
       const address = data.address || {};
@@ -159,7 +196,7 @@ class Crime {
           "suburb",
           "hamlet",
           "locality",
-          "quarter"
+          "quarter",
         ]),
         this.getFirstAddressValue(address, [
           "city",
@@ -167,29 +204,46 @@ class Crime {
           "village",
           "municipality",
           "city_district",
-          "county_district"
+          "county_district",
         ]),
         this.getFirstAddressValue(address, [
           "county",
           "state_district",
-          "state"
-        ])
+          "state",
+        ]),
       ].filter(Boolean);
 
-      const uniqueLocationParts = locationParts.filter((part, index, array) => 
-        array.indexOf(part) === index
+      const uniqueLocationParts = locationParts.filter(
+        (part, index, array) => array.indexOf(part) === index,
       );
 
-      return uniqueLocationParts.length > 0 ? uniqueLocationParts.join(', ') : "Unknown Location";
+      const name =
+        uniqueLocationParts.length > 0
+          ? uniqueLocationParts.join(", ")
+          : "Unknown Location";
 
+      return {
+        name,
+        displayName: `${name} · ${h3Index}`,
+        coordinates,
+      };
     } catch (error) {
-      console.error('Error getting location name:', error);
-      return "Unknown Location";
+      console.error("Error getting location name:", error);
+      return {
+        name: "Unknown Location",
+        displayName: `Unknown Location · ${h3Index}`,
+        coordinates: null,
+      };
     }
   }
 
+  static async getLocationNameFromH3(h3Index) {
+    const { name } = await this.getLocationDetailsFromH3(h3Index);
+    return name;
+  }
+
   static formatCrimeData(rawData) {
-    return rawData.map(row => [
+    return rawData.map((row) => [
       row.h3_low_res,
       parseInt(row.burglary) || 0,
       parseInt(row.personal_theft) || 0,
@@ -201,17 +255,19 @@ class Crime {
       parseInt(row.violent) || 0,
       parseInt(row.anti_social) || 0,
       parseInt(row.drugs) || 0,
-      parseInt(row.vehicle_crime) || 0
+      parseInt(row.vehicle_crime) || 0,
     ]);
   }
 
   static async formatCrimeDataWithLocation(rawData) {
     const formattedData = await Promise.all(
       rawData.map(async (row) => {
-        const locationName = await this.getLocationNameFromH3(row.h3_low_res);
+        const location = await this.getLocationDetailsFromH3(row.h3_low_res);
         return {
           h3: row.h3_low_res,
-          name: locationName,
+          name: location.name,
+          displayName: location.displayName,
+          coordinates: location.coordinates,
           crimes: [
             parseInt(row.burglary) || 0,
             parseInt(row.personal_theft) || 0,
@@ -223,17 +279,13 @@ class Crime {
             parseInt(row.violent) || 0,
             parseInt(row.anti_social) || 0,
             parseInt(row.drugs) || 0,
-            parseInt(row.vehicle_crime) || 0
-          ]
+            parseInt(row.vehicle_crime) || 0,
+          ],
         };
-      })
+      }),
     );
     return formattedData;
   }
 }
 
 module.exports = Crime;
-
-
-
-
