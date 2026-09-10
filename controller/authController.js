@@ -255,6 +255,54 @@ class AuthController {
     });
   }
 
+  static async forgotPassword(req, res) {
+    const { email } = req.body;
+
+    if (!email || typeof email !== "string" || !email.trim()) {
+      throw createHttpError(400, "Email is required", {
+        error: "Email is required",
+      });
+    }
+
+    const user = await User.findByEmail(email);
+
+    // Do not reveal whether an email address is registered.
+    if (!user) {
+      return res.json({
+        message:
+          "If an account exists for this email, a password reset link has been sent.",
+      });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetTokenHash = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    const resetExpiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes from now
+
+    await User.updatePasswordResetToken(
+      user.id,
+      resetTokenHash,
+      resetExpiresAt,
+    );
+
+    try {
+      await EmailService.sendPasswordReset(user, resetToken);
+    } catch (error) {
+      console.error("Password reset email failed:", error.message);
+      throw createHttpError(502, "Unable to send password reset email", {
+        expose: true,
+        error: "Email sending failed",
+      });
+    }
+
+    res.json({
+      message:
+        "If an account exists for this email, a password reset link has been sent.",
+    });
+  }
+
   static async logout(req, res) {
     res.clearCookie("auth_token", getCookieOptions(req));
     res.json({ message: "Logout successful" });
@@ -269,6 +317,46 @@ class AuthController {
     }
 
     res.json({ user });
+  }
+
+  static async updatePostcode(req, res) {
+    const { postcode } = req.body ?? {};
+
+    if (!postcode || typeof postcode !== "string" || !postcode.trim()) {
+      throw createHttpError(400, "Postcode is required", {
+        error: "Postcode is required",
+      });
+    }
+
+    let h3Index;
+    try {
+      h3Index = await User.postcodeToH3(postcode);
+    } catch (error) {
+      if (error.statusCode) {
+        throw error;
+      }
+
+      throw createHttpError(400, "Invalid postcode", {
+        error: "Invalid postcode",
+        details: {
+          postcode,
+          reason: error.message,
+        },
+      });
+    }
+
+    const user = await User.updatePostcode(req.userId, h3Index);
+
+    if (!user) {
+      throw createHttpError(404, "User not found", {
+        error: "User not found",
+      });
+    }
+
+    res.json({
+      message: "Postcode updated successfully",
+      user,
+    });
   }
 }
 

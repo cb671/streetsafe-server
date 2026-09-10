@@ -31,4 +31,16 @@ router.get(
   asyncHandler(authController.getProfile),
 );
 
+router.patch(
+  "/profile/postcode",
+  authenticateToken,
+  asyncHandler(authController.updatePostcode),
+);
+
+router.post(
+  "/forgot-password",
+  authRateLimit,
+  asyncHandler(authController.forgotPassword),
+);
+
 module.exports = router;

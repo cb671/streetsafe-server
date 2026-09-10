@@ -2,6 +2,7 @@ const db = require("../database/connect");
 const bcrypt = require("bcrypt");
 const { geoToH3 } = require("h3-js");
 const crypto = require("crypto");
+const { createHttpError } = require("../utils/httpError");
 
 class User {
   static async create(
@@ -128,23 +129,78 @@ class User {
     }
   }
 
+  static async updatePasswordResetToken(
+    userId,
+    resetTokenHash,
+    resetExpiresAt,
+  ) {
+    try {
+      const query = `
+        UPDATE users
+        SET
+          password_reset_token_hash = $2,
+          password_reset_expires_at = $3
+        WHERE id = $1
+        RETURNING id, name, email
+      `;
+
+      const values = [userId, resetTokenHash, resetExpiresAt];
+
+      const { rows } = await db.query(query, values);
+      return rows[0] || null;
+    } catch (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+  }
+
+  static async findByPasswordResetToken(token) {
+    try {
+      const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+      const query = `
+        SELECT * 
+        FROM users 
+        WHERE password_reset_token_hash = $1
+          AND password_reset_expires_at > NOW()
+      `;
+
+      const { rows } = await db.query(query, [tokenHash]);
+      return rows[0] || null;
+    } catch (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+  }
+
   static async validatePassword(plainPassword, hashedPassword) {
     return await bcrypt.compare(plainPassword, hashedPassword);
   }
 
+  static async updatePostcode(userId, h3Index) {
+    const query = `
+      UPDATE users
+      SET h3 = $2
+      WHERE id = $1
+      RETURNING id, name, email, h3, email_verified_at, created_at
+    `;
+
+    const { rows } = await db.query(query, [userId, h3Index]);
+    return rows[0] || null;
+  }
+
   static async postcodeToH3(postcode) {
     try {
-      if (typeof postcode !== "string") {
-        throw new Error("Postcode must be a string");
+      if (typeof postcode !== "string" || !postcode.trim()) {
+        throw createHttpError(400, "Postcode must be a string");
       }
-
       const normalizedPostcode = postcode.trim().toUpperCase();
       const outwardCodePattern = /^[A-Z]{1,2}\d[A-Z\d]?$/;
-      const fullPostcodePattern = /^(?:GIR\s?0AA|[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2})$/;
+      const fullPostcodePattern =
+        /^(?:GIR\s?0AA|[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2})$/;
       const isOutwardCode = outwardCodePattern.test(normalizedPostcode);
 
       if (!isOutwardCode && !fullPostcodePattern.test(normalizedPostcode)) {
-        throw new Error(
+        throw createHttpError(
+          400,
           "Enter a valid UK outward code or full postcode",
         );
       }
@@ -165,16 +221,17 @@ class User {
       console.log(`API Response status: ${response.status}`);
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.log(`API Error response: ${errorText}`);
-        throw new Error(`Invalid postcode: ${response.status} - ${errorText}`);
+        if (response.status === 404) {
+          throw createHttpError(400, "Postcode not found");
+        }
+
+        throw new Error(`Postcode service returned ${response.status}`);
       }
 
       const data = await response.json();
-      console.log(`API Response data:`, data);
 
       if (!data.result) {
-        throw new Error("Postcode not found");
+        throw new Error("Postcode service returned no result");
       }
 
       const { latitude, longitude } = data.result;
@@ -184,8 +241,16 @@ class User {
       console.log(`H3 index: ${h3Index}`);
       return h3Index;
     } catch (error) {
-      console.error(`Full error details:`, error);
-      throw new Error(`Error converting postcode to H3: ${error.message}`);
+      if (error.statusCode) {
+        throw error;
+      }
+      console.error("Postcode lookup failed:", error.message);
+
+      throw createHttpError(
+        502,
+        "Postcode lookup is temporarily unavailable. Please try again later.",
+        { expose: true },
+      );
     }
   }
 }
