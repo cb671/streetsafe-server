@@ -7,11 +7,20 @@ const EmailService = require("../utils/emailService");
 
 class AuthController {
   static async register(req, res) {
-    const { name, email, password, postcode } = req.body;
+    const { name, email, password, postcode } = req.body ?? {};
 
-    if (!name || !email || !password || !postcode) {
-      throw createHttpError(400, "All fields are required", {
-        error: "All fields are required",
+    if (
+      typeof name !== "string" ||
+      !name.trim() ||
+      typeof email !== "string" ||
+      !email.trim() ||
+      typeof password !== "string" ||
+      !password ||
+      typeof postcode !== "string" ||
+      !postcode.trim()
+    ) {
+      throw createHttpError(400, "All fields must be non-empty strings", {
+        error: "All fields must be non-empty strings",
       });
     }
 
@@ -133,7 +142,7 @@ class AuthController {
   }
 
   static async resendConfirmation(req, res) {
-    const { email } = req.body;
+    const { email } = req.body ?? {};
 
     if (!email || typeof email !== "string" || !email.trim()) {
       throw createHttpError(400, "Email is required", {
@@ -196,12 +205,21 @@ class AuthController {
   }
 
   static async login(req, res) {
-    const { email, password } = req.body;
+    const { email, password } = req.body ?? {};
 
-    if (!email || !password) {
-      throw createHttpError(400, "Email and password are required", {
-        error: "Email and password are required",
-      });
+    if (
+      typeof email !== "string" ||
+      !email.trim() ||
+      typeof password !== "string" ||
+      !password
+    ) {
+      throw createHttpError(
+        400,
+        "Email and password must be non-empty strings",
+        {
+          error: "Email and password must be non-empty strings",
+        },
+      );
     }
 
     const user = await User.findByEmail(email);
@@ -256,7 +274,10 @@ class AuthController {
   }
 
   static async forgotPassword(req, res) {
-    const { email } = req.body;
+    const { email } = req.body ?? {};
+
+    const genericMessage =
+      "If an account exists for this email, a password reset link has been sent.";
 
     if (!email || typeof email !== "string" || !email.trim()) {
       throw createHttpError(400, "Email is required", {
@@ -268,9 +289,8 @@ class AuthController {
 
     // Do not reveal whether an email address is registered.
     if (!user) {
-      return res.json({
-        message:
-          "If an account exists for this email, a password reset link has been sent.",
+      return res.status(200).json({
+        message: genericMessage,
       });
     }
 
@@ -281,26 +301,56 @@ class AuthController {
       .digest("hex");
     const resetExpiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes from now
 
-    await User.updatePasswordResetToken(
+    const updatedUser = await User.updatePasswordResetToken(
       user.id,
       resetTokenHash,
       resetExpiresAt,
     );
 
+    if (!updatedUser) {
+      return res.status(200).json({ message: genericMessage });
+    }
+
     try {
-      await EmailService.sendPasswordReset(user, resetToken);
+      await EmailService.sendPasswordReset(updatedUser, resetToken);
     } catch (error) {
       console.error("Password reset email failed:", error.message);
-      throw createHttpError(502, "Unable to send password reset email", {
-        expose: true,
-        error: "Email sending failed",
+    }
+
+    return res.status(200).json({
+      message: genericMessage,
+    });
+  }
+
+  static async resetPassword(req, res) {
+    const { token, newPassword } = req.body ?? {};
+
+    if (typeof token !== "string" || !/^[a-f0-9]{64}$/.test(token)) {
+      throw createHttpError(400, "Invalid or expired reset link", {
+        error: "Invalid or expired reset link",
       });
     }
 
-    res.json({
-      message:
-        "If an account exists for this email, a password reset link has been sent.",
-    });
+    if (typeof newPassword !== "string" || newPassword.length < 8) {
+      throw createHttpError(
+        400,
+        "New password must be at least 8 characters long",
+        {
+          error:
+            "New password is required and must be at least 8 characters long",
+        },
+      );
+    }
+
+    const user = await User.resetPassword(token, newPassword);
+
+    if (!user) {
+      throw createHttpError(400, "Invalid or expired reset link", {
+        error: "Invalid or expired reset link",
+      });
+    }
+
+    return res.status(200).json({ message: genericMessage });
   }
 
   static async logout(req, res) {

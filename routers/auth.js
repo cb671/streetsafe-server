@@ -43,4 +43,10 @@ router.post(
   asyncHandler(authController.forgotPassword),
 );
 
+router.post(
+  "/reset-password",
+  authRateLimit,
+  asyncHandler(authController.resetPassword),
+);
+
 module.exports = router;

@@ -14,7 +14,9 @@ CREATE TABLE users (
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     email_verified_at TIMESTAMP,
     email_confirmation_token_hash VARCHAR(64),
-    email_confirmation_expires_at TIMESTAMP
+    email_confirmation_expires_at TIMESTAMP,
+    password_reset_token_hash VARCHAR(64),
+    password_reset_expires_at TIMESTAMP
 );
 
 CREATE TABLE emergency_services (

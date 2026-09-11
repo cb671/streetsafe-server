@@ -56,6 +56,48 @@ const sendRegistrationConfirmation = async (user, token) => {
   }
 };
 
+const sendPasswordReset = async (user, token) => {
+  const apiKey = process.env.BREVO_API_KEY;
+  const templateId = Number(process.env.BREVO_PASSWORD_RESET_TEMPLATE_ID);
+  const resetUrl = process.env.PASSWORD_RESET_URL;
+
+  if (
+    !apiKey ||
+    !Number.isInteger(templateId) ||
+    templateId <= 0 ||
+    !resetUrl
+  ) {
+    throw new Error("Password reset email is not configured.");
+  }
+
+  const url = new URL(resetUrl);
+  url.searchParams.set("token", token);
+
+  const response = await fetch(BREVO_EMAIL_ENDPOINT, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "api-key": apiKey,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      to: [{ email: user.email, name: user.name }],
+      templateId,
+      params: {
+        firstName: user.name.trim().split(/\s+/)[0],
+        resetUrl: url.toString(),
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Brevo rejected the password reset email (${response.status}).`,
+    );
+  }
+};
+
 module.exports = {
   sendRegistrationConfirmation,
+  sendPasswordReset,
 };

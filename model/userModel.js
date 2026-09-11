@@ -46,6 +46,8 @@ class User {
     }
   }
 
+  // Fetch user by email
+
   static async findByEmail(email) {
     try {
       const normalizedEmail = email.trim().toLowerCase();
@@ -123,6 +125,51 @@ class User {
       const values = [userId, confirmationTokenHash, confirmationExpiresAt];
 
       const { rows } = await db.query(query, values);
+      return rows[0] || null;
+    } catch (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+  }
+
+  // Updating password
+
+  static async resetPassword(token, newPassword) {
+    try {
+      const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+      const query = `
+        UPDATE users
+        SET password = $2,
+            password_reset_token_hash = NULL,
+            password_reset_expires_at = NULL
+        WHERE password_reset_token_hash = $1
+        AND password_reset_expires_at > NOW()
+        RETURNING id, name, email
+      `;
+
+      const { rows } = await db.query(query, [tokenHash, hashedPassword]);
+      return rows[0] || null;
+    } catch (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+  }
+
+  static async updatePassword(userId, newPassword) {
+    try {
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+      const query = `
+        UPDATE users
+        SET password = $2,
+            password_reset_token_hash = NULL,
+            password_reset_expires_at = NULL
+        WHERE id = $1
+        RETURNING id, name, email
+      `;
+
+      const { rows } = await db.query(query, [userId, hashedPassword]);
       return rows[0] || null;
     } catch (error) {
       throw new Error(`Database error: ${error.message}`);
