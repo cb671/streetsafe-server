@@ -208,7 +208,9 @@ describe("User Model and Auth Controller", () => {
       it("returns null when a token is invalid, expired, or already used", async () => {
         db.query.mockResolvedValue({ rows: [] });
 
-        await expect(User.confirmationEmail("unusable-token")).resolves.toBeNull();
+        await expect(
+          User.confirmationEmail("unusable-token"),
+        ).resolves.toBeNull();
       });
     });
 
@@ -317,17 +319,26 @@ describe("User Model and Auth Controller", () => {
         ["a partial inward code", "N16 6"],
         ["an incomplete full postcode", "N16 QQ"],
         ["arbitrary text", "not a postcode"],
-        ["an empty value", "   "],
-      ])("should reject %s before calling Postcodes.io", async (_label, input) => {
-        await expect(User.postcodeToH3(input)).rejects.toThrow(
-          "Error converting postcode to H3: Enter a valid UK outward code or full postcode",
+      ])(
+        "should reject %s before calling Postcodes.io",
+        async (_label, input) => {
+          await expect(User.postcodeToH3(input)).rejects.toThrow(
+            "Enter a valid UK outward code or full postcode",
+          );
+          expect(global.fetch).not.toHaveBeenCalled();
+        },
+      );
+
+      it("should reject empty postcode input before calling Postcodes.io", async () => {
+        await expect(User.postcodeToH3("   ")).rejects.toThrow(
+          "Postcode must be a string",
         );
         expect(global.fetch).not.toHaveBeenCalled();
       });
 
       it("should reject non-string postcode input before calling Postcodes.io", async () => {
         await expect(User.postcodeToH3(null)).rejects.toThrow(
-          "Error converting postcode to H3: Postcode must be a string",
+          "Postcode must be a string",
         );
         expect(global.fetch).not.toHaveBeenCalled();
       });
@@ -340,7 +351,7 @@ describe("User Model and Auth Controller", () => {
         });
 
         await expect(User.postcodeToH3("ZZ99 9ZZ")).rejects.toThrow(
-          "Error converting postcode to H3: Invalid postcode: 404 - Postcode not found",
+          "Postcode not found",
         );
       });
 
@@ -348,7 +359,7 @@ describe("User Model and Auth Controller", () => {
         global.fetch.mockRejectedValue(new Error("Network error"));
 
         await expect(User.postcodeToH3("SW1A 1AA")).rejects.toThrow(
-          "Error converting postcode to H3: Network error",
+          "Postcode lookup is temporarily unavailable. Please try again later.",
         );
       });
 
@@ -359,7 +370,7 @@ describe("User Model and Auth Controller", () => {
         });
 
         await expect(User.postcodeToH3("SW1A 1AA")).rejects.toThrow(
-          "Error converting postcode to H3: Postcode not found",
+          "Postcode lookup is temporarily unavailable. Please try again later.",
         );
       });
     });
@@ -401,9 +412,12 @@ describe("User Model and Auth Controller", () => {
         );
         expect(
           require("../utils/emailService").sendRegistrationConfirmation,
-        ).toHaveBeenCalledWith(mockUser, expect.stringMatching(/^[a-f0-9]{64}$/));
-        const sentToken =
-          require("../utils/emailService").sendRegistrationConfirmation.mock.calls[0][1];
+        ).toHaveBeenCalledWith(
+          mockUser,
+          expect.stringMatching(/^[a-f0-9]{64}$/),
+        );
+        const sentToken = require("../utils/emailService")
+          .sendRegistrationConfirmation.mock.calls[0][1];
         expect(User.create.mock.calls[0][4]).toBe(
           crypto.createHash("sha256").update(sentToken).digest("hex"),
         );
@@ -425,8 +439,8 @@ describe("User Model and Auth Controller", () => {
 
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
-          error: "All fields are required",
-          message: "All fields are required",
+          error: "All fields must be non-empty strings",
+          message: "All fields must be non-empty strings",
         });
       });
 
@@ -605,15 +619,17 @@ describe("User Model and Auth Controller", () => {
         User.findByEmail = jest.fn().mockResolvedValue(user);
         User.updateConfirmationToken = jest.fn().mockResolvedValue(user);
 
-        await invokeController(() => AuthController.resendConfirmation(req, res));
+        await invokeController(() =>
+          AuthController.resendConfirmation(req, res),
+        );
 
         expect(User.updateConfirmationToken).toHaveBeenCalledWith(
           1,
           expect.stringMatching(/^[a-f0-9]{64}$/),
           expect.any(Date),
         );
-        const sentToken =
-          require("../utils/emailService").sendRegistrationConfirmation.mock.calls[0][1];
+        const sentToken = require("../utils/emailService")
+          .sendRegistrationConfirmation.mock.calls[0][1];
         expect(User.updateConfirmationToken.mock.calls[0][1]).toBe(
           crypto.createHash("sha256").update(sentToken).digest("hex"),
         );
@@ -626,19 +642,24 @@ describe("User Model and Auth Controller", () => {
       it.each([
         ["unknown", null],
         ["already verified", { id: 1, email_verified_at: new Date() }],
-      ])("returns the generic response for an %s account", async (_label, user) => {
-        req.body = { email: "john@example.com" };
-        User.findByEmail = jest.fn().mockResolvedValue(user);
-        User.updateConfirmationToken = jest.fn();
+      ])(
+        "returns the generic response for an %s account",
+        async (_label, user) => {
+          req.body = { email: "john@example.com" };
+          User.findByEmail = jest.fn().mockResolvedValue(user);
+          User.updateConfirmationToken = jest.fn();
 
-        await invokeController(() => AuthController.resendConfirmation(req, res));
+          await invokeController(() =>
+            AuthController.resendConfirmation(req, res),
+          );
 
-        expect(User.updateConfirmationToken).not.toHaveBeenCalled();
-        expect(res.json).toHaveBeenCalledWith({
-          message:
-            "If an unconfirmed account exists for this email, a new confirmation email has been sent.",
-        });
-      });
+          expect(User.updateConfirmationToken).not.toHaveBeenCalled();
+          expect(res.json).toHaveBeenCalledWith({
+            message:
+              "If an unconfirmed account exists for this email, a new confirmation email has been sent.",
+          });
+        },
+      );
 
       it("returns 502 when the replacement email cannot be sent", async () => {
         req.body = { email: "john@example.com" };
@@ -654,7 +675,9 @@ describe("User Model and Auth Controller", () => {
           new Error("Brevo unavailable"),
         );
 
-        await invokeController(() => AuthController.resendConfirmation(req, res));
+        await invokeController(() =>
+          AuthController.resendConfirmation(req, res),
+        );
 
         expect(res.status).toHaveBeenCalledWith(502);
         expect(res.json).toHaveBeenCalledWith({
@@ -714,8 +737,8 @@ describe("User Model and Auth Controller", () => {
 
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
-          error: "Email and password are required",
-          message: "Email and password are required",
+          error: "Email and password must be non-empty strings",
+          message: "Email and password must be non-empty strings",
         });
       });
 

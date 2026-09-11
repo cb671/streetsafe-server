@@ -72,6 +72,7 @@ class User {
           email, 
           h3, 
           email_verified_at,
+          session_version,
           created_at 
         FROM users 
         WHERE id = $1
@@ -143,7 +144,8 @@ class User {
         UPDATE users
         SET password = $2,
             password_reset_token_hash = NULL,
-            password_reset_expires_at = NULL
+            password_reset_expires_at = NULL,
+            session_version = session_version + 1
         WHERE password_reset_token_hash = $1
         AND password_reset_expires_at > NOW()
         RETURNING id, name, email
@@ -164,7 +166,8 @@ class User {
         UPDATE users
         SET password = $2,
             password_reset_token_hash = NULL,
-            password_reset_expires_at = NULL
+            password_reset_expires_at = NULL,
+            session_version = session_version + 1
         WHERE id = $1
         RETURNING id, name, email
       `;

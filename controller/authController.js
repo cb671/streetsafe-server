@@ -251,7 +251,11 @@ class AuthController {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      {
+        userId: user.id,
+        email: user.email,
+        sessionVersion: user.session_version,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "7d" },
     );
@@ -350,7 +354,7 @@ class AuthController {
       });
     }
 
-    return res.status(200).json({ message: genericMessage });
+    return res.status(200).json({ message: "Password reset successfully" });
   }
 
   static async logout(req, res) {

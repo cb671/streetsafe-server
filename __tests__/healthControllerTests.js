@@ -20,7 +20,9 @@ describe("health controller", () => {
       MAPS_API_KEY: "maps-key",
       BREVO_API_KEY: "brevo-key",
       BREVO_CONFIRMATION_TEMPLATE_ID: "42",
-      EMAIL_CONFIRMATION_URL: "https://example.com/confirm-email"
+      EMAIL_CONFIRMATION_URL: "https://example.com/confirm-email",
+      PASSWORD_RESET_URL: "https://example.com/reset-password",
+      BREVO_PASSWORD_RESET_TEMPLATE_ID: "43"
     };
     global.fetch = jest.fn();
     res = {

@@ -14,6 +14,8 @@ describe("environment configuration", () => {
       "BREVO_API_KEY",
       "BREVO_CONFIRMATION_TEMPLATE_ID",
       "EMAIL_CONFIRMATION_URL",
+      "PASSWORD_RESET_URL",
+      "BREVO_PASSWORD_RESET_TEMPLATE_ID",
     ]);
   });
 
@@ -25,7 +27,9 @@ describe("environment configuration", () => {
       MAPS_API_KEY: "maps-key",
       BREVO_API_KEY: "brevo-key",
       BREVO_CONFIRMATION_TEMPLATE_ID: "42",
-      EMAIL_CONFIRMATION_URL: "https://example.com/confirm-email"
+      EMAIL_CONFIRMATION_URL: "https://example.com/confirm-email",
+      PASSWORD_RESET_URL: "https://example.com/reset-password",
+      BREVO_PASSWORD_RESET_TEMPLATE_ID: "43"
     };
 
     expect(getConfigStatus(env)).toEqual({
@@ -38,6 +42,8 @@ describe("environment configuration", () => {
         "BREVO_API_KEY",
         "BREVO_CONFIRMATION_TEMPLATE_ID",
         "EMAIL_CONFIRMATION_URL",
+        "PASSWORD_RESET_URL",
+        "BREVO_PASSWORD_RESET_TEMPLATE_ID",
       ],
       missing: []
     });
@@ -50,7 +56,7 @@ describe("environment configuration", () => {
         JWT_SECRET: "secret"
       })
     ).toThrow(
-      "Missing required environment variables: VALHALLA_URL, MAPS_API_KEY, BREVO_API_KEY, BREVO_CONFIRMATION_TEMPLATE_ID, EMAIL_CONFIRMATION_URL",
+      "Missing required environment variables: VALHALLA_URL, MAPS_API_KEY, BREVO_API_KEY, BREVO_CONFIRMATION_TEMPLATE_ID, EMAIL_CONFIRMATION_URL, PASSWORD_RESET_URL, BREVO_PASSWORD_RESET_TEMPLATE_ID",
     );
   });
 });

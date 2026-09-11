@@ -6,6 +6,8 @@ const requiredEnvVars = [
   "BREVO_API_KEY",
   "BREVO_CONFIRMATION_TEMPLATE_ID",
   "EMAIL_CONFIRMATION_URL",
+  "PASSWORD_RESET_URL",
+  "BREVO_PASSWORD_RESET_TEMPLATE_ID",
 ];
 
 const getMissingEnvVars = (env = process.env) =>
