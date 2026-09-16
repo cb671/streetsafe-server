@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS resource_bookmarks;
 DROP TABLE IF EXISTS educational_sources;
 DROP TABLE IF EXISTS emergency_services;
 DROP TABLE IF EXISTS users;
@@ -35,6 +36,13 @@ CREATE TABLE educational_sources (
     type VARCHAR(50) NOT NULL,
     target_crime_type VARCHAR(50) NOT NULL,
     added_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+CREATE TABLE resource_bookmarks (
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    resource_id INTEGER NOT NULL REFERENCES educational_sources(id) ON DELETE CASCADE,
+    saved_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (user_id, resource_id)
 );
 
 INSERT INTO educational_sources (title, url, description, type, target_crime_type)

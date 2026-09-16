@@ -205,7 +205,8 @@ class AuthController {
   }
 
   static async login(req, res) {
-    const { email, password } = req.body ?? {};
+    const { email, password, rememberMe = false } = req.body ?? {};
+    const keepSignedIn = rememberMe == true;
 
     if (
       typeof email !== "string" ||
@@ -257,13 +258,13 @@ class AuthController {
         sessionVersion: user.session_version,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" },
+      { expiresIn: keepSignedIn ? "7d" : "8d" },
     );
 
     res.cookie(
       "auth_token",
       token,
-      getCookieOptions(req, 7 * 24 * 60 * 60 * 1000),
+      getCookieOptions(req, keepSignedIn ? 7 * 24 * 60 * 60 * 1000 : undefined),
     );
 
     res.json({
