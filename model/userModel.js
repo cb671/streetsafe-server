@@ -12,6 +12,8 @@ class User {
     h3,
     emailConfirmationTokenHash,
     emailConfirmationExpiresAt,
+    locationType,
+    outwardCode,
   ) {
     try {
       const hashedPassword = await bcrypt.hash(password, 12);
@@ -23,10 +25,15 @@ class User {
           password, 
           h3,
           email_confirmation_token_hash,
-          email_confirmation_expires_at
+          email_confirmation_expires_at,
+          location_type,
+          outward_code
         )
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING id, name, email, h3, email_verified_at, created_at
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING 
+          id, name, email, h3, 
+          location_type, outward_code, 
+          email_verified_at, created_at
       `;
 
       // Normalize the email before saving it
@@ -37,6 +44,8 @@ class User {
         h3,
         emailConfirmationTokenHash,
         emailConfirmationExpiresAt,
+        locationType,
+        outwardCode,
       ];
 
       const { rows } = await db.query(query, values);
@@ -73,7 +82,9 @@ class User {
           h3, 
           email_verified_at,
           session_version,
-          created_at 
+          created_at,
+          location_type,
+          outward_code
         FROM users 
         WHERE id = $1
       `;
@@ -225,19 +236,27 @@ class User {
     return await bcrypt.compare(plainPassword, hashedPassword);
   }
 
-  static async updatePostcode(userId, h3Index) {
+  static async updatePostcode(userId, h3Index, locationType, outwardCode) {
     const query = `
       UPDATE users
-      SET h3 = $2
+      SET 
+        h3 = $2,
+        location_type = $3,
+        outward_code = $4
       WHERE id = $1
-      RETURNING id, name, email, h3, email_verified_at, created_at
+      RETURNING 
+        id, name, email, h3, 
+        location_type, outward_code,
+        email_verified_at, created_at
     `;
 
-    const { rows } = await db.query(query, [userId, h3Index]);
+    const values = [userId, h3Index, locationType, outwardCode];
+
+    const { rows } = await db.query(query, values);
     return rows[0] || null;
   }
 
-  static async postcodeToH3(postcode) {
+  static async resolvePostcode(postcode) {
     try {
       if (typeof postcode !== "string" || !postcode.trim()) {
         throw createHttpError(400, "Postcode must be a string");
@@ -289,7 +308,11 @@ class User {
 
       const h3Index = geoToH3(latitude, longitude, 9);
       console.log(`H3 index: ${h3Index}`);
-      return h3Index;
+      return {
+        h3: h3Index,
+        locationType: isOutwardCode ? "outward" : "full",
+        outwardCode: data.result.outcode,
+      };
     } catch (error) {
       if (error.statusCode) {
         throw error;
@@ -302,6 +325,11 @@ class User {
         { expose: true },
       );
     }
+  }
+
+  static async postcodeToH3(postcode) {
+    const location = await User.resolvePostcode(postcode);
+    return location.h3;
   }
 }
 

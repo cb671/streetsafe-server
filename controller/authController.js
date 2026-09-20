@@ -1,3 +1,4 @@
+const { getDistrictCells } = require("../utils/postcodeDistrictCells");
 const crypto = require("crypto");
 const User = require("../model/userModel");
 const jwt = require("jsonwebtoken");
@@ -41,9 +42,9 @@ class AuthController {
       });
     }
 
-    let h3Index;
+    let location;
     try {
-      h3Index = await User.postcodeToH3(postcode);
+      location = await User.resolvePostcode(postcode);
     } catch (error) {
       if (error.statusCode) {
         throw error;
@@ -75,9 +76,11 @@ class AuthController {
         name,
         email,
         password,
-        h3Index,
+        location.h3,
         confirmationTokenHash,
         confirmationExpiresat,
+        location.locationType,
+        location.outwardCode,
       );
     } catch (error) {
       if (error.statusCode) {
@@ -371,7 +374,20 @@ class AuthController {
       });
     }
 
-    res.json({ user });
+    let homeH3Cells = [];
+
+    if (user.location_type === "full") {
+      homeH3Cells = [user.h3];
+    } else if (user.location_type === "outward") {
+      homeH3Cells = await getDistrictCells(user.outward_code);
+    }
+
+    res.json({
+      user: {
+        ...user,
+        homeH3Cells,
+      },
+    });
   }
 
   static async updatePostcode(req, res) {
@@ -383,9 +399,9 @@ class AuthController {
       });
     }
 
-    let h3Index;
+    let location;
     try {
-      h3Index = await User.postcodeToH3(postcode);
+      location = await User.resolvePostcode(postcode);
     } catch (error) {
       if (error.statusCode) {
         throw error;
@@ -400,7 +416,12 @@ class AuthController {
       });
     }
 
-    const user = await User.updatePostcode(req.userId, h3Index);
+    const user = await User.updatePostcode(
+      req.userId,
+      location.h3,
+      location.locationType,
+      location.outwardCode,
+    );
 
     if (!user) {
       throw createHttpError(404, "User not found", {

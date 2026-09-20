@@ -9,3 +9,9 @@ valhalla-data/*.tar
 valhalla-data/valhalla_tiles/
 valhalla-data/admins.sqlite
 valhalla-data/timezones.sqlite
+/data/uk-postcode-polygons-master/kml
+/data/uk-postcode-polygons-master/.github/
+/data/uk-postcode-polygons-master/.gitignore
+/data/uk-postcode-polygons-master/package.json
+/data/uk-postcode-polygons-master/package-lock.json
+/data/uk-postcode-polygons-master/update.sh
