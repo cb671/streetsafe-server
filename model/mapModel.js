@@ -124,7 +124,51 @@ class Crime {
     }
   }
 
+  static async getAreaReferenceFromH3(h3Index) {
+    const isHexString = /[a-fA-F]/.test(h3Index.toString());
+    const h3Value = isHexString ? "$1::h3index" : "$1::bigint::h3index";
+
+    const selectQuery = `
+      SELECT area_number
+      FROM map_area_references
+      WHERE h3_index = ${h3Value};
+    `;
+
+    const existing = await db.query(selectQuery, [h3Index]);
+
+    if (existing.rows.length > 0) {
+      return `Area ${existing.rows[0].area_number}`;
+    }
+
+    await db.query(
+      `
+        INSERT INTO map_area_references (h3_index)
+        VALUES (${h3Value})
+        ON CONFLICT (h3_index) DO NOTHING;
+      `,
+      [h3Index],
+    );
+
+    const created = await db.query(selectQuery, [h3Index]);
+
+    if (created.rows.length === 0) {
+      throw new Error("Could not retrieve area reference");
+    }
+
+    return `Area ${created.rows[0].area_number}`;
+  }
+
   static async getLocationDetailsFromH3(h3Index) {
+    let areaReference = null;
+
+    try {
+      areaReference = await this.getAreaReferenceFromH3(h3Index);
+    } catch (error) {
+      console.error("Error getting area reference:", error);
+    }
+
+    const displayReference = areaReference || `Cell ${h3Index}`;
+
     try {
       let query;
       let queryParams;
@@ -144,7 +188,8 @@ class Crime {
       if (rows.length === 0) {
         return {
           name: "Unknown Location",
-          displayName: `Unknown Location · ${h3Index}`,
+          areaReference,
+          displayName: `Unknown Location · ${displayReference}`,
           coordinates: null,
         };
       }
@@ -163,15 +208,38 @@ class Crime {
         console.error("Invalid coordinates:", { lat, lng });
         return {
           name: "Unknown Location",
-          displayName: `Unknown Location · ${h3Index}`,
+          areaReference,
+          displayName: `Unknown Location · ${displayReference}`,
           coordinates: null,
         };
       }
 
       const coordinates = { latitude: lat, longitude: lng };
 
+      const h3Value = isHexString ? "$1::h3index" : "$1::bigint:h3index";
+
+      const { rows: storedLocations } = await db.query(
+        `
+          SELECT street_name
+          FROM map_area_references
+          WHERE h3_index = ${h3Value};
+        `,
+        [h3Index],
+      );
+
+      const storedStreetName = storedLocations[0]?.street_name?.trim();
+
+      if (storedStreetName) {
+        return {
+          name: storedStreetName,
+          areaReference,
+          displayName: `${storedStreetName} · ${displayReference}`,
+          coordinates,
+        };
+      }
+
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=15&addressdetails=1`,
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=17&addressdetails=1`,
         {
           headers: {
             "User-Agent": "StreetSafe-App/1.0",
@@ -182,7 +250,8 @@ class Crime {
       if (!response.ok) {
         return {
           name: "Unknown Location",
-          displayName: `Unknown Location · ${h3Index}`,
+          areaReference,
+          displayName: `Unknown Location · ${displayReference}`,
           coordinates,
         };
       }
@@ -190,28 +259,39 @@ class Crime {
       const data = await response.json();
       const address = data.address || {};
 
-      const locationParts = [
-        this.getFirstAddressValue(address, [
-          "neighbourhood",
-          "suburb",
-          "hamlet",
-          "locality",
-          "quarter",
-        ]),
-        this.getFirstAddressValue(address, [
-          "city",
-          "town",
-          "village",
-          "municipality",
-          "city_district",
-          "county_district",
-        ]),
-        this.getFirstAddressValue(address, [
-          "county",
-          "state_district",
-          "state",
-        ]),
-      ].filter(Boolean);
+      const street = this.getFirstAddressValue(address, [
+        "road",
+        "pedestrian",
+        "footway",
+        "path",
+      ]);
+
+      const neighbourhood = this.getFirstAddressValue(address, [
+        "neighbourhood",
+        "suburb",
+        "hamlet",
+        "locality",
+        "quarter",
+      ]);
+
+      const city = this.getFirstAddressValue(address, [
+        "city",
+        "town",
+        "village",
+        "municipality",
+        "city_district",
+        "county_district",
+      ]);
+
+      const region = this.getFirstAddressValue(address, [
+        "county",
+        "state_district",
+        "state",
+      ]);
+
+      const locationParts = street
+        ? [street, neighbourhood || city || region].filter(Boolean)
+        : [neighbourhood, city, region].filter(Boolean);
 
       const uniqueLocationParts = locationParts.filter(
         (part, index, array) => array.indexOf(part) === index,
@@ -224,14 +304,16 @@ class Crime {
 
       return {
         name,
-        displayName: `${name} · ${h3Index}`,
+        areaReference,
+        displayName: `${name} · ${displayReference}`,
         coordinates,
       };
     } catch (error) {
       console.error("Error getting location name:", error);
       return {
         name: "Unknown Location",
-        displayName: `Unknown Location · ${h3Index}`,
+        areaReference,
+        displayName: `Unknown Location · ${displayReference}`,
         coordinates: null,
       };
     }
@@ -266,6 +348,7 @@ class Crime {
         return {
           h3: row.h3_low_res,
           name: location.name,
+          areaReference: location.areaReference,
           displayName: location.displayName,
           coordinates: location.coordinates,
           crimes: [
